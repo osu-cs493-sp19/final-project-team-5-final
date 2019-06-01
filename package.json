@@ -1,0 +1,40 @@
+{
+  "name": "final-project-team-5-final",
+  "version": "1.0.0",
+  "description": "Final Project for CS493",
+  "main": "server.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/osu-cs493-sp19/final-project-team-5-final.git"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "mysql",
+    "jwt"
+  ],
+  "author": "Jack Barnes <barnesj@oregonstate.edu>, Zachary Thomas <thomasza@oregonstate.edu>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/osu-cs493-sp19/final-project-team-5-final/issues"
+  },
+  "homepage": "https://github.com/osu-cs493-sp19/final-project-team-5-final#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "morgan": "^1.9.1",
+    "mysql": "^2.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
+  }
+}
