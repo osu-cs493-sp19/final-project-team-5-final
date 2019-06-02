@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const api = require('./api');
 const app = express();
 const port = process.env.PORT || 8000;
+const { connectToDB } = require('./lib/mongo');
 
 app.use(morgan('dev'));
 app.use(bodyParser.json());
@@ -23,7 +24,12 @@ app.use('*', (req, res, next) => {
     });
 });
 
-//CONNECT TO MYSQL SERVER FROM DOCKER-COMPOSE:
-// sudo docker run --rm -it --network final-project-team-5-final_default mysql:5 mysql -h mysql -u tarpaulin -p
-// will prompt for mysql password: hunter2
+connectToDB(() => {
+    app.listen(port, () => {
+        console.log("== Server is running on port", port);
+    });
+});
+
+// launch mongo shell: 
+// docker run --rm -it --network final-project-team-5-final_default mongo:latest mongo --host mongodb --username tarpaulin --password hunter2 --authenticationDatabase tarpaulin
 

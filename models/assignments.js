@@ -1,1 +1,0 @@
-const mysqlPool = require('../lib/mysqlPool');

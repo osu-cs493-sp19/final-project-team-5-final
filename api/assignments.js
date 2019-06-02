@@ -2,6 +2,10 @@ const router = require('express').Router();
 
 const { requireAuthentication } = require('../lib/auth');
 
+const {
+    AssignmentSchema
+  } = require('../models/assignment');
+
 /*
     POST /assignments
 
@@ -83,7 +87,7 @@ router.delete('/:id', async (req, res, next) => {
 });
 
 /*
-    GET /assignemnts/{id}
+    GET /assignments/{id}/submissions
     Returns a list of all the submissions for an assignment.
     Paginated.
     Must be authenticated as the course's instructor, or an admin.

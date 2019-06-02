@@ -1,6 +1,9 @@
 const router = require('express').Router();
 
 const { requireAuthentication } = require('../lib/auth');
+const {
+    CourseSchema
+  } = require('../models/course');
 
 /*
     GET /courses

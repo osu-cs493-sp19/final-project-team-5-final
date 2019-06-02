@@ -6,6 +6,10 @@ const {
     tagRole
   } = require('../lib/auth');
 
+  const {
+    UserScheme
+  } = require('../models/users');
+
 /*
     POST /users
     Req:
