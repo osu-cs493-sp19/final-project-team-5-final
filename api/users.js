@@ -10,10 +10,10 @@ const {
     validateAgainstSchema,
   } = require('../lib/validation');
 
-  const {
-    UserScheme,
+const {
+    UserSchema,
     getUserById,
-	getUserByEmail,
+    getUserByEmail,
     insertNewUser,
     validateUser
   } = require('../models/users');
@@ -37,8 +37,6 @@ const {
 //Only authenticated admin can create instructor or admin role users.
 router.post('/', tagRole, async (req, res, next) => {
 
-	console.log("== req.userRole: ", req.userRole);
-	
 	//confirm that the request body contains a valid user.
 	if (validateAgainstSchema(req.body, UserSchema)) {
 		
@@ -55,7 +53,7 @@ router.post('/', tagRole, async (req, res, next) => {
 			} else {
 
 				//only admins can create 'admin' or 'instructor' roles.
-				if (req.body.role != 'admin' && req.body.role != 'instructor') { 
+				if (req.body.role != "admin" && req.body.role != "instructor") { 
 					
 					//adds the new user and then returns the id.
 					const id = await insertNewUser(req.body);
@@ -235,6 +233,5 @@ router.get('/:id', requireAuthentication, async (req, res, next) => {
 	}
 
 });
-
 
 module.exports = router;
