@@ -13,9 +13,9 @@ const {
   const {
     UserScheme,
     getUserById,
+	getUserByEmail,
     insertNewUser,
-    validateUser,
-    getUserIdFromEmail
+    validateUser
   } = require('../models/users');
 
 /*
@@ -109,8 +109,8 @@ router.post('/login', async (req, res, next) => {
 		try {
 			
 			//validate user info and get id.
-			const authenticated = await validateUser(req.body.email, req.body.password);
-			const user = await getUserIdFromEmail(req.body.email);
+			const user = await getUserByEmail(req.body.email);
+			const authenticated = await validateUser(userId, req.body.password);
 		
 			if (authenticated) {
 			
