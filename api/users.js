@@ -37,22 +37,12 @@ const {
 //Only authenticated admin can create instructor or admin role users.
 router.post('/', tagRole, async (req, res, next) => {
 
-//confirm that the request body contains a valid user.
-if (validateAgainstSchema(req.body, UserSchema)) {
-	try {
-		//added by middleware tagRole.
-		if (req.userRole == "admin") {
-			
-			//adds the new user and then returns the id.
-			const id = await insertNewUser(req.body);
-			res.status(201).send({
-				_id: id
-			});
-
-		} else {
-
-			//only admins can create 'admin' or 'instructor' roles.
-			if (req.body.role != 'admin' && req.body.role != 'instructor') { 
+	//confirm that the request body contains a valid user.
+	if (validateAgainstSchema(req.body, UserSchema)) {
+		
+		try {
+			//added by middleware tagRole.
+			if (req.userRole == "admin") {
 				
 				//adds the new user and then returns the id.
 				const id = await insertNewUser(req.body);
@@ -62,25 +52,37 @@ if (validateAgainstSchema(req.body, UserSchema)) {
 
 			} else {
 
-				//this user is not allowed to make 'admin' or 'instructor' roles.
-				res.status(403).send({
-					error: "The request was not made by an authenticated User \
-					satisfying the authorization criteria."
-				});
+				//only admins can create 'admin' or 'instructor' roles.
+				if (req.body.role != 'admin' && req.body.role != 'instructor') { 
+					
+					//adds the new user and then returns the id.
+					const id = await insertNewUser(req.body);
+					res.status(201).send({
+						_id: id
+					});
+
+				} else {
+
+					//this user is not allowed to make 'admin' or 'instructor' roles.
+					res.status(403).send({
+						error: "The request was not made by an authenticated User satisfying the authorization criteria."
+					});
+
+				}
 
 			}
 
+		} catch (err) {
+			console.error(err);
+			res.status(500).send({
+				error: "Error inserting new user. Try again later."
+			});
 		}
 
-	} catch (err) {
-		res.status(500).send({
-			error: "Error inserting new user. Try again later."
-		});
-	}
 	} else {
-	res.status(400).send({
-		error: "The request body was either not present or did not contain a valid User object."
-	});
+		res.status(400).send({
+			error: "The request body was either not present or did not contain a valid User object."
+		});
 	}
 
 });
@@ -110,23 +112,36 @@ router.post('/login', async (req, res, next) => {
 			
 			//validate user info and get id.
 			const user = await getUserByEmail(req.body.email);
-			const authenticated = await validateUser(userId, req.body.password);
-		
-			if (authenticated) {
+			console.log("== user:\n", user);
 			
-				//user our user info to generate a token and return it.
-				const token = generateAuthToken(user);
-				res.status(200).send({
-					token: token
-				});
+			//if the user exists then attempt to authenticate.
+			if(user) {
+			
+				const authenticated = await validateUser(user.id, req.body.password);
+			
+				if (authenticated) {
 				
+					//user our user info to generate a token and return it.
+					const token = generateAuthToken(user);
+					res.status(200).send({
+						token: token
+					});
+					
+				} else {
+					res.status(401).send({
+						error: "The specified credentials were invalid."
+					});
+				}	
+			
 			} else {
 				res.status(401).send({
-					error: "The specified credentials were invalid."
+					error: "The specified credentials were invalid.."
 				});
-			}	
+			}
+
 
 		} catch (err) {
+			console.error(err);
 			res.status(500).send({
 				error: "An internal server error occurred."
 			});
@@ -134,8 +149,7 @@ router.post('/login', async (req, res, next) => {
 
 	} else {
 		res.status(400).send({
-			error: "The request body was either not present or did \
-			not contain all of the required fields."
+			error: "The request body was either not present or did not contain all of the required fields."
 		});
 	}
 
@@ -160,7 +174,7 @@ router.post('/login', async (req, res, next) => {
 router.get('/:id', requireAuthentication, async (req, res, next) => {
 
 	//only the target user or an admin can access this information.
-    	if (req.userRole == "admin" || req.params.id == req.userId) {
+	if (req.userRole == "admin" || req.params.id == req.userId) {
 
 		//get user information.
 		const user = await getUserById(req.params.id, false);
@@ -199,27 +213,21 @@ router.get('/:id', requireAuthentication, async (req, res, next) => {
 
 			//we get a 404 error if we try to find an admin.
 			if (user.role == "admin") {
-    	
 				res.status(404).send({
 					error: "Specified User id not found."
 				});
-				
 			}
 
 		} else {
-		
-				res.status(404).send({
-					error: "Specified User id not found."
-				});
-
+			res.status(404).send({
+				error: "Specified User id not found."
+			});
 		}
 	
 	} else {
-		
 		res.status(403).send({
 			error: "Not authorized."
 		});
-
 	}
 
 });

@@ -51,14 +51,11 @@ exports.getUserById = getUserById;
 async function getUserByEmail(email) {
   const db = getDBReference();
   const collection = db.collection('users');
-  if (!ObjectId.isValid(id)) {
-    return null;
-  } else {
-    const results = await collection
-      .find({ email: new ObjectId(email) })
-      .toArray();
-    return results[0];
-  }
+  const query = { email: email };
+  const results = await collection
+    .find(query)
+    .toArray();
+  return results[0];
 };
 exports.getUserByEmail = getUserByEmail;
 
