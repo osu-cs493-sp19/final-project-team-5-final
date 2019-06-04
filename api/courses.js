@@ -1,8 +1,10 @@
 const router = require('express').Router();
 
-const { requireAuthentication } = require('../lib/auth');
+const { validateAgainstSchema } = require('../lib/validation');
+const { requireAuthentication, tagRole } = require('../lib/auth');
 const {
-    CourseSchema
+    CourseSchema,
+    insertNewCourse
   } = require('../models/course');
 
 /*
@@ -55,8 +57,40 @@ router.get('/', async (req, res, next) => {
     403 Not authorized
     
 */
-router.post('/', async (req, res, next) => {
-    
+router.post('/', tagRole, async (req, res, next) => {
+
+	//only admins can post new courses.
+	if (req.body.userRole == "admin") {
+		
+		//confirm that the request body contains a valid course.
+		if (validateAgainstSchema(req.body, CourseSchema)) {
+		
+			try {
+				
+				//adds the new course and then returns the id.
+				const id = await insertNewCourse(req.body); 
+				res.status(201).send({
+					_id: id
+				});
+
+			} catch (err) {
+				res.status(500).send({
+					error: "Error inserting new course. Try again later."
+				});
+			}
+		
+		} else {
+			res.status(400).send({
+				error: "The request body was either not present or did not contain a valid Course object."
+			});
+		}
+
+	} else {
+		res.status(403).send({
+			error: "The request was not made by an authenticated User statisfying the authorization criteria."
+		});
+	}
+
 });
 
 /*
