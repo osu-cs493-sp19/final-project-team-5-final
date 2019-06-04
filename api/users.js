@@ -37,12 +37,14 @@ const {
 //Only authenticated admin can create instructor or admin role users.
 router.post('/', tagRole, async (req, res, next) => {
 
+	console.log("== req.userRole: ", req.userRole);
+	
 	//confirm that the request body contains a valid user.
 	if (validateAgainstSchema(req.body, UserSchema)) {
 		
 		try {
 			//added by middleware tagRole.
-			if (req.userRole == "admin") {
+			if (req.body.userRole == "admin") {
 				
 				//adds the new user and then returns the id.
 				const id = await insertNewUser(req.body);
@@ -121,7 +123,7 @@ router.post('/login', async (req, res, next) => {
 			
 				if (authenticated) {
 				
-					//user our user info to generate a token and return it.
+					//use our user info to generate a token and return it.
 					const token = generateAuthToken(user);
 					res.status(200).send({
 						token: token
@@ -174,6 +176,8 @@ router.post('/login', async (req, res, next) => {
 router.get('/:id', requireAuthentication, async (req, res, next) => {
 
 	//only the target user or an admin can access this information.
+	console.log("== req.params.id: ", req.params.id);
+	console.log("== req.userId: ", req.userId);
 	if (req.userRole == "admin" || req.params.id == req.userId) {
 
 		//get user information.
