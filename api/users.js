@@ -173,13 +173,11 @@ router.get('/:id', requireAuthentication, async (req, res, next) => {
 				// UNDER CONSTRUCTION:
 				// Return placeholder data for now.
 				res.status(200).send({
-					{
-						subject: "CS",
-						number: 493,
-						title: "Cloud Application Development",
-						term: "sp19",
-						instructorId: "123"
-					}
+					subject: "CS",
+					number: 493,
+					title: "Cloud Application Development",
+					term: "sp19",
+					instructorId: "123"
 				});
 			
 			}
@@ -190,13 +188,11 @@ router.get('/:id', requireAuthentication, async (req, res, next) => {
 				// UNDER CONSTRUCTION:
 				// Return placeholder data for now.
 				res.status(200).send({
-					{
-						subject: "MTH",
-						number: 101,
-						title: "Basic Math",
-						term: "sp19",
-						instructorId: "641"
-					}
+					subject: "MTH",
+					number: 101,
+					title: "Basic Math",
+					term: "sp19",
+					instructorId: "641"
 				});
 				
 			}
