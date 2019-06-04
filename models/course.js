@@ -11,3 +11,14 @@ const CourseSchema = {
     instructorid: { require: true }
 };
 exports.CourseSchema = CourseSchema;
+
+/*
+ * Insert a new Course into the DB.
+ */
+exports.insertNewUser = async function (course) {
+  const courseToInsert = extractValidFields(course, UserSchema);
+  const db = getDBReference();
+  const collection = db.collection('courses');
+  const result = await collection.insertOne(courseToInsert);
+  return result.insertedId;
+};

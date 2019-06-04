@@ -60,7 +60,7 @@ router.get('/', async (req, res, next) => {
 router.post('/', tagRole, async (req, res, next) => {
 
 	//only admins can post new courses.
-	if (req.body.userRole == "admin") {
+	if (req.userRole == "admin") {
 		
 		//confirm that the request body contains a valid course.
 		if (validateAgainstSchema(req.body, CourseSchema)) {
@@ -87,7 +87,7 @@ router.post('/', tagRole, async (req, res, next) => {
 
 	} else {
 		res.status(403).send({
-			error: "The request was not made by an authenticated User statisfying the authorization criteria."
+			error: "The request was not made by an authenticated User satisfying the authorization criteria."
 		});
 	}
 
