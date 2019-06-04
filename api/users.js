@@ -117,7 +117,7 @@ router.post('/login', async (req, res, next) => {
 			//if the user exists then attempt to authenticate.
 			if(user) {
 			
-				const authenticated = await validateUser(user.id, req.body.password);
+				const authenticated = await validateUser(user._id, req.body.password);
 			
 				if (authenticated) {
 				
