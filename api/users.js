@@ -29,7 +29,38 @@ const {
 //Only authenticated admin can create instructor or admin role users.
 router.post('/', tagRole, async (req, res, next) => {
 
-    if(req.userRole == "admin"){} //added by middleware tagRole
+/*
+    //confirm that the request body contains a valid user.
+    if(validateAgainstSchema(req.body, UserSchema) {
+	try {
+    		//added by middleware tagRole
+    		if(req.userRole == "admin") {
+   			
+			//adds the new user and then returns the id.
+			const id = await insertNewUser(req.body);
+			res.status(201).send({
+				_id: id
+			});
+
+   		} else {
+			// UNDER CONSTRUCTION: 
+			// Allow other users to create some accounts.
+			res.status(403).send({
+				"error": "The request was not made by an authenticated User satisfying the authorization criteria."
+			};
+		}
+
+	} catch (err) {
+		res.status(500).send({
+			error: "Error inserting new user. Try again later."
+		});
+	});
+    } else {
+    	res.status(400).send({
+		"error": "The request body was either not present or did not contain a valid User object."
+	};
+    }
+*/
 
 });
 
