@@ -118,6 +118,7 @@ router.get('/:id', async (req, res, next) => {
 
 	//get course information.
 	const course = await getCourseById(req.params.id, false, false);
+	console.log("== course: \n", course);
 	
 	if (course) {
 		
