@@ -15,8 +15,8 @@ exports.CourseSchema = CourseSchema;
 /*
  * Insert a new Course into the DB.
  */
-exports.insertNewUser = async function (course) {
-  const courseToInsert = extractValidFields(course, UserSchema);
+exports.insertNewCourse = async function (course) {
+  const courseToInsert = extractValidFields(course, CourseSchema);
   const db = getDBReference();
   const collection = db.collection('courses');
   const result = await collection.insertOne(courseToInsert);
