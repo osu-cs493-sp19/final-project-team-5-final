@@ -186,8 +186,10 @@ router.get('/:id', requireAuthentication, async (req, res, next) => {
 			//if the user is an instructor, return the courses they teach.
 			if (user.role == "instructor") {
 			
-				// UNDER CONSTRUCTION:
-				// Return placeholder data for now.
+				//UNDER CONSTRUCTION:
+				//will need to add logic to show instructors that 
+				//have teaching meta-data attaching to this course.
+				//return placeholder data for now.
 				res.status(200).send({
 					subject: "CS",
 					number: 493,
@@ -201,8 +203,10 @@ router.get('/:id', requireAuthentication, async (req, res, next) => {
 			//if the user is a student, return the courses they are enrolled in.
 			if (user.role == "student") {
 				
-				// UNDER CONSTRUCTION:
-				// Return placeholder data for now.
+				//UNDER CONSTRUCTION:
+				//will need to add logic to show students that 
+				//have enrollment meta-data attaching to this course.
+				//return placeholder data for now.
 				res.status(200).send({
 					subject: "MTH",
 					number: 101,

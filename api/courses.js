@@ -1,12 +1,14 @@
 const router = require('express').Router();
 
-const { validateAgainstSchema } = require('../lib/validation');
+const { validateAgainstSchema, validateAgainstSchemaPatch } = require('../lib/validation');
 const { requireAuthentication, tagRole } = require('../lib/auth');
 const {
     CourseSchema,
     insertNewCourse,
     getCourseById,
-    getCoursesPage
+    getCoursesPage,
+    modifyCourse,
+    deleteCourseByID 
   } = require('../models/course');
 
 /*
@@ -39,6 +41,7 @@ router.get('/', async (req, res, next) => {
 
 	try {
 
+		//get the current page and meta data and return it.
 		const coursesPage = await getCoursesPage(parseInt(req.query.page) || 1, 5);
 		res.status(200).send(coursesPage);
 	
@@ -132,7 +135,6 @@ router.get('/:id', async (req, res, next) => {
 
 	//get course information.
 	const course = await getCourseById(req.params.id, false, false);
-	console.log("== course: \n", course);
 	
 	if (course) {
 		
@@ -164,7 +166,49 @@ router.get('/:id', async (req, res, next) => {
     404: course id not found
 
 */
-router.patch('/:id', async (req, res, next) => {
+router.patch('/:id', requireAuthentication, async (req, res, next) => {
+
+	//start by getting the course info.
+	const course = await getCourseById(req.params.id, false, false);
+	
+	//only continue if we found the course.
+	if (course) {
+		
+		//only admins and the course instructor can update courses.
+		if (req.userRole == "admin" || course.instructorid == req.userId ) {
+			
+			//confirm that the request body contain at least one valid field.
+			if (validateAgainstSchemaPatch(req.body, CourseSchema)) {
+			
+				try {
+					
+					//update the course and return a success status.
+					const id = await modifyCourse(req.params.id, req.body); 
+					res.status(201).send({});
+
+				} catch (err) {
+					console.error(err);
+					res.status(500).send({
+						error: "Error updating course. Try again later."
+					});
+				}
+			
+			} else {
+				res.status(400).send({
+					error: "The request body was either not present or did not contain any fields related to Course objects."
+				});
+			}
+
+		} else {
+			res.status(403).send({
+				error: "The request was not made by an authenticated User satisfying the authorization criteria."
+			});
+		}
+	} else {
+		res.status(404).send({
+			error: "Course id not found."
+		});
+	}
 
 });
 
@@ -182,7 +226,36 @@ router.patch('/:id', async (req, res, next) => {
     404: course id not found
 
 */
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', tagRole, async (req, res, next) => {
+
+	//UNDER CONSTRUCTION:
+	//will need to add logic to delete meta-data
+	//from students about the courses they are enrolled in, and
+	//remove all related assignments.
+
+	//only admins can remove a course.
+	if (req.userRole == "admin") {
+		
+		//remove the course.
+		const deleteSuccessful = await deleteCourseByID(req.params.id); 
+
+		//see if we could find the course to delete.
+		if (deleteSuccessful) {
+		
+			//return success status.
+			res.status(204).send({});
+		
+		} else {
+			res.status(404).send({
+				error: "Course id not found."
+			});
+		}
+
+	} else {
+		res.status(403).send({
+			error: "Improper authentication."
+		});
+	}
 
 });
 
