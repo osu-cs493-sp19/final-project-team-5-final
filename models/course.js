@@ -24,6 +24,16 @@ exports.insertNewCourse = async function (course) {
 };
 
 /*
+ * Modify a Course in the DB.
+ */
+exports.modifyCourse = async function (id, body) {
+  const db = getDBReference();
+  const collection = db.collection('courses');
+  const modBus = JSON.parse(JSON.stringify(body));
+  return await collection.updateOne({_id: new ObjectID(id)}, {$set: modBus});
+};
+
+/*
  * Delete a Course from the DB.
  */
 exports.deleteCourseByID = async function (id) {
