@@ -7,6 +7,7 @@ const {
     insertNewCourse,
     getCourseById,
     getCoursesPage,
+    modifyCourse,
     deleteCourseByID 
   } = require('../models/course');
 
@@ -134,7 +135,6 @@ router.get('/:id', async (req, res, next) => {
 
 	//get course information.
 	const course = await getCourseById(req.params.id, false, false);
-	console.log("== course: \n", course);
 	
 	if (course) {
 		
@@ -166,7 +166,49 @@ router.get('/:id', async (req, res, next) => {
     404: course id not found
 
 */
-router.patch('/:id', async (req, res, next) => {
+router.patch('/:id', requireAuthentication, async (req, res, next) => {
+
+	//start by getting the course info.
+	const course = await getCourseById(req.params.id, false, false);
+	
+	//only continue if we found the course.
+	if (course) {
+		
+		//only admins and the course instructor can update courses.
+		if (req.userRole == "admin" || course.instructorid == req.userId ) {
+			
+			//confirm that the request body contains a valid course.
+			if (validateAgainstSchema(req.body, CourseSchema)) {
+			
+				try {
+					
+					//update the course and return a success status.
+					const id = await modifyCourse(req.params.id, req.body); 
+					res.status(201).send({});
+
+				} catch (err) {
+					console.error(err);
+					res.status(500).send({
+						error: "Error updating course. Try again later."
+					});
+				}
+			
+			} else {
+				res.status(400).send({
+					error: "The request body was either not present or did not contain any fields related to Course objects."
+				});
+			}
+
+		} else {
+			res.status(403).send({
+				error: "The request was not made by an authenticated User satisfying the authorization criteria."
+			});
+		}
+	} else {
+		res.status(404).send({
+			error: "Course id not found."
+		});
+	}
 
 });
 
