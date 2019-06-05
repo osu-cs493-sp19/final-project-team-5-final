@@ -4,7 +4,8 @@ const { validateAgainstSchema } = require('../lib/validation');
 const { requireAuthentication, tagRole } = require('../lib/auth');
 const {
     CourseSchema,
-    insertNewCourse
+    insertNewCourse,
+    getCourseById
   } = require('../models/course');
 
 /*
@@ -115,7 +116,24 @@ router.post('/', tagRole, async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
 
+	//get course information.
+	const course = await getCourseById(req.params.id, false, false);
+	
+	if (course) {
+		
+		//return course info.
+		res.status(200).send({
+			course: course
+		});
+			
+	} else {
+		res.status(404).send({
+			error: "Specified Course id not found."
+		});
+	}
+
 });
+
 /*
     PATCH /courses/{id}
 
