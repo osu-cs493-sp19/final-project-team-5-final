@@ -34,6 +34,18 @@ exports.modifyCourse = async function (id, body) {
 };
 
 /*
+ * Modify a student enrollment for a Course in the DB.
+ */
+exports.modifyEnrollment = async function (id, body) {
+  const db = getDBReference();
+  const collection = db.collection('courses');
+  const modBus = JSON.parse(JSON.stringify(body));
+  //remove students by id in the "remove" array.
+  //add students by in the "add" array.
+  //return await collection.updateOne({_id: new ObjectId(id)}, {$set: modBus});
+};
+
+/*
  * Delete a Course from the DB.
  */
 exports.deleteCourseByID = async function (id) {

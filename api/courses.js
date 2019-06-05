@@ -8,7 +8,8 @@ const {
     getCourseById,
     getCoursesPage,
     modifyCourse,
-    deleteCourseByID 
+    deleteCourseByID,
+    modifyEnrollment
   } = require('../models/course');
 
 /*
@@ -291,6 +292,49 @@ router.get('/:id/students', async (req, res, next) => {
     404: course not found
 */
 router.post('/:id/students', async (req, res, next) => {
+
+	//start by getting the course info.
+	const course = await getCourseById(req.params.id, false, false);
+	
+	//only continue if we found the course.
+	if (course) {
+		
+		//only admins and the course instructor can add students to the course.
+		if (req.userRole == "admin" || course.instructorid == req.userId ) {
+			
+			//confirm that the request body is valid.
+			//if (validateAgainstSchema(req.body, CourseSchema)) {
+			if (true) {
+			
+				try {
+					
+					//add and/or remove students from the course and return a success status.
+					//const id = await modifyEnrollment(req.params.id, req.body); 
+					res.status(201).send({});
+
+				} catch (err) {
+					console.error(err);
+					res.status(500).send({
+						error: "Error updating course. Try again later."
+					});
+				}
+			
+			} else {
+				res.status(400).send({
+					error: "The request body was either not present or did not contain a valid enrollment object."
+				});
+			}
+
+		} else {
+			res.status(403).send({
+				error: "The request was not made by an authenticated User satisfying the authorization criteria."
+			});
+		}
+	} else {
+		res.status(404).send({
+			error: "Course not found."
+		});
+	}
 
 });
 
