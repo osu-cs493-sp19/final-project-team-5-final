@@ -30,7 +30,7 @@ exports.modifyCourse = async function (id, body) {
   const db = getDBReference();
   const collection = db.collection('courses');
   const modBus = JSON.parse(JSON.stringify(body));
-  return await collection.updateOne({_id: new ObjectID(id)}, {$set: modBus});
+  return await collection.updateOne({_id: new ObjectId(id)}, {$set: modBus});
 };
 
 /*
