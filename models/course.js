@@ -20,6 +20,8 @@ exports.insertNewCourse = async function (course) {
   const db = getDBReference();
   const collection = db.collection('courses');
   const result = await collection.insertOne(courseToInsert);
+  //add an empty students field to the course.
+  //await collection.updateOne({_id: result.insertedId}, { $addFields: { students: [] }}); 
   return result.insertedId;
 };
 
@@ -40,9 +42,10 @@ exports.modifyEnrollment = async function (id, body) {
   const db = getDBReference();
   const collection = db.collection('courses');
   const modBus = JSON.parse(JSON.stringify(body));
+  console("== modBus: \n", modBus);
   //remove students by id in the "remove" array.
-  //add students by in the "add" array.
-  //return await collection.updateOne({_id: new ObjectId(id)}, {$set: modBus});
+  //add students by id in the "add" array.
+  return await collection.updateOne({_id: new ObjectId(id)}, {$set: modBus});
 };
 
 /*

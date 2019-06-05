@@ -31,8 +31,8 @@ db.users.insertMany([
   }
 ]);
 
-uidA = db.users.findOne({name:"Instructor A"})._id;
-uidB = db.users.findOne({name:"Instructor B"})._id;
+const uidA = db.users.findOne({name:"Instructor A"})._id.toString();
+const uidB = db.users.findOne({name:"Instructor B"})._id.toString();
 
 db.courses.insertMany([
   {
@@ -51,8 +51,8 @@ db.courses.insertMany([
   }
 ]);
 
-cidA = db.courses.findOne({subject:"CS", number:"493"})._id;
-cidB = db.courses.findOne({subject:"WR", number:"327"})._id;
+const cidA = db.courses.findOne({subject:"CS", number:"493"})._id.toString();
+const cidB = db.courses.findOne({subject:"WR", number:"327"})._id.toString();
 
 db.assignments.insertMany([
   {
