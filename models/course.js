@@ -43,3 +43,28 @@ async function getCourseById(id, includeStudents, includeAssignments) {
   }
 };
 exports.getCourseById = getCourseById;
+
+/*
+ * Get specific page of courses.
+ */
+exports.getCoursesPage = async function (page, pageSize) {
+    const db = getDBReference();
+    const collection = db.collection('courses');
+    var numResults = await collection.countDocuments();
+    var pages = Math.max(Math.ceil (numResults / pageSize),1);
+    var offset = (page - 1) * pageSize;
+    var queryResults = await collection.find({})
+    .sort({ _id: 1 })
+    .skip(offset)
+    .limit(pageSize)
+    .toArray();
+    return {
+        courses: queryResults,
+        results: numResults,
+        page: page,
+        totalpages: pages,
+        first: "/courses?page=1",
+        next: "/courses?page="+Math.min(page+1,pages).toString(),
+        last: "/courses?page="+pages.toString()
+    };
+}

@@ -5,7 +5,8 @@ const { requireAuthentication, tagRole } = require('../lib/auth');
 const {
     CourseSchema,
     insertNewCourse,
-    getCourseById
+    getCourseById,
+    getCoursesPage
   } = require('../models/course');
 
 /*
@@ -35,6 +36,18 @@ const {
  */
 
 router.get('/', async (req, res, next) => {
+
+	try {
+
+		const coursesPage = await getCoursesPage(parseInt(req.query.page) || 1, 5);
+		res.status(200).send(coursesPage);
+	
+	} catch (err) {
+		console.error(err);
+		res.status(500).send({
+			error: "Error fetching courses page. Try again later."
+		});
+	}
 
 });
 
@@ -75,6 +88,7 @@ router.post('/', tagRole, async (req, res, next) => {
 				});
 
 			} catch (err) {
+				console.error(err);
 				res.status(500).send({
 					error: "Error inserting new course. Try again later."
 				});
