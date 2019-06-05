@@ -24,6 +24,16 @@ exports.insertNewCourse = async function (course) {
 };
 
 /*
+ * Delete a Course from the DB.
+ */
+exports.deleteCourseByID = async function (id) {
+  const db = getDBReference();
+  const collection = db.collection('courses');
+  return await collection.deleteOne({_id: new ObjectId(id)});
+};
+
+
+/*
  * Fetch a Course from the DB based on Course ID.
  */
 async function getCourseById(id, includeStudents, includeAssignments) {

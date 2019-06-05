@@ -6,7 +6,8 @@ const {
     CourseSchema,
     insertNewCourse,
     getCourseById,
-    getCoursesPage
+    getCoursesPage,
+    deleteCourseByID 
   } = require('../models/course');
 
 /*
@@ -39,6 +40,7 @@ router.get('/', async (req, res, next) => {
 
 	try {
 
+		//get the current page and meta data and return it.
 		const coursesPage = await getCoursesPage(parseInt(req.query.page) || 1, 5);
 		res.status(200).send(coursesPage);
 	
@@ -182,7 +184,36 @@ router.patch('/:id', async (req, res, next) => {
     404: course id not found
 
 */
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', tagRole, async (req, res, next) => {
+
+	//UNDER CONSTRUCTION:
+	//will need to add logic to delete meta-data
+	//from students about the courses they are enrolled in, and
+	//remove all related assignments.
+
+	//only admins can remove a course.
+	if (req.userRole == "admin") {
+		
+		//remove the course.
+		const deleteSuccessful = await deleteCourseByID(req.params.id); 
+
+		//see if we could find the course to delete.
+		if (deleteSuccessful) {
+		
+			//return success status.
+			res.status(204).send({});
+		
+		} else {
+			res.status(404).send({
+				error: "Course id not found."
+			});
+		}
+
+	} else {
+		res.status(403).send({
+			error: "Improper authentication."
+		});
+	}
 
 });
 
