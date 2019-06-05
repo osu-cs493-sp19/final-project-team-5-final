@@ -1,6 +1,6 @@
 const router = require('express').Router();
 
-const { validateAgainstSchema } = require('../lib/validation');
+const { validateAgainstSchema, validateAgainstSchemaPatch } = require('../lib/validation');
 const { requireAuthentication, tagRole } = require('../lib/auth');
 const {
     CourseSchema,
@@ -177,8 +177,8 @@ router.patch('/:id', requireAuthentication, async (req, res, next) => {
 		//only admins and the course instructor can update courses.
 		if (req.userRole == "admin" || course.instructorid == req.userId ) {
 			
-			//confirm that the request body contains a valid course.
-			if (validateAgainstSchema(req.body, CourseSchema)) {
+			//confirm that the request body contain at least one valid field.
+			if (validateAgainstSchemaPatch(req.body, CourseSchema)) {
 			
 				try {
 					
