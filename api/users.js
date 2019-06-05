@@ -42,7 +42,7 @@ router.post('/', tagRole, async (req, res, next) => {
 		
 		try {
 			//added by middleware tagRole.
-			if (req.body.userRole == "admin") {
+			if (req.userRole == "admin") {
 				
 				//adds the new user and then returns the id.
 				const id = await insertNewUser(req.body);
@@ -53,7 +53,7 @@ router.post('/', tagRole, async (req, res, next) => {
 			} else {
 
 				//only admins can create 'admin' or 'instructor' roles.
-				if (req.body.role != "admin" && req.body.role != "instructor") { 
+				if (req.body.role == "admin" || req.body.role == "instructor") { 
 					
 					//adds the new user and then returns the id.
 					const id = await insertNewUser(req.body);
