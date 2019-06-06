@@ -120,8 +120,18 @@ exports.modifyEnrollment = async function (id, body) {
  */
 exports.deleteCourseByID = async function (id) {
   const db = getDBReference();
-  const collection = db.collection('courses');
-  return await collection.deleteOne({_id: new ObjectId(id)});
+  const courseCollection = db.collection('courses');
+  const userCollection = db.collection('users');
+  const assignmentCollection = db.collection('assignments');
+
+  //remove this course from all student and instructor lists.
+  await userCollection.updateMany({}, {$pull: { courses: id }});
+
+  //UNDER CONSTRUCTION:
+  //will need function to remove all assignments from the course as well.
+
+  //remove the course from the "coures" collection.
+  return await courseCollection.deleteOne({_id: new ObjectId(id)});
 };
 
 
