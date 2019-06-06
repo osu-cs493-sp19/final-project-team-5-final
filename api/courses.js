@@ -134,8 +134,12 @@ router.post('/', tagRole, async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
 
-	//get course information.
-	const course = await getCourseById(req.params.id, false, false);
+	//get course information. Hide student and assignment info.
+	const course = await getCourseById(req.params.id, false);
+
+     //don't hide any course info in the log.
+     const courseLog = await getCourseById(req.params.id, true);
+     console.log("== course:\n", courseLog);
 
 	if (course) {
 
@@ -170,7 +174,7 @@ router.get('/:id', async (req, res, next) => {
 router.patch('/:id', requireAuthentication, async (req, res, next) => {
 
 	//start by getting the course info.
-	const course = await getCourseById(req.params.id, false, false);
+	const course = await getCourseById(req.params.id, false);
 
 	//only continue if we found the course.
 	if (course) {
@@ -296,7 +300,7 @@ router.get('/:id/students', async (req, res, next) => {
 router.post('/:id/students', requireAuthentication, async (req, res, next) => {
 
 	//start by getting the course info.
-	const course = await getCourseById(req.params.id, false, false);
+	const course = await getCourseById(req.params.id, false);
 
 	//only continue if we found the course.
 	if (course) {

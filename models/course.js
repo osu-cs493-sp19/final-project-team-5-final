@@ -128,18 +128,16 @@ exports.deleteCourseByID = async function (id) {
 /*
  * Fetch a Course from the DB based on Course ID.
  */
-async function getCourseById(id, includeStudents, includeAssignments) {
+async function getCourseById(id, includeRelations) {
   const db = getDBReference();
   const collection = db.collection('courses');
   if (!ObjectId.isValid(id)) {
     return null;
   } else {
-    //const projectionStudents = includeStudents ? {} : { students: 0 };
-	//const projectionAssignments = includeAssignments ? {} : { assignments: 0 };
+    const projection = includeRelations ? {} : { students: 0 , assignments: 0 };
     const results = await collection
       .find({ _id: new ObjectId(id) })
-      //.project(projectionStudents)
-	  //.project(projectionAssignments)
+      .project(projection)
       .toArray();
     return results[0];
   }
@@ -156,6 +154,7 @@ exports.getCoursesPage = async function (page, pageSize) {
     var pages = Math.max(Math.ceil (numResults / pageSize),1);
     var offset = (page - 1) * pageSize;
     var queryResults = await collection.find({})
+    .project({ students: 0 , assignments: 0 })
     .sort({ _id: 1 })
     .skip(offset)
     .limit(pageSize)
