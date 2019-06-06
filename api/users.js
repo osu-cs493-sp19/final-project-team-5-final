@@ -180,11 +180,11 @@ router.get('/:id', requireAuthentication, async (req, res, next) => {
 
 		//get user information.
 		const user = await getUserById(req.params.id, false);
+          console.log("== user: \n", user);
 
 		if (user) {
 
 			//return user info.
-               const user = await getUserById(req.params.id);
 			res.status(200).send(user);
 
 		} else {

@@ -2,6 +2,7 @@ const { ObjectId } = require('mongodb');
 const { getDBReference } = require('../lib/mongo');
 const bcrypt = require('bcryptjs');
 const { extractValidFields } = require('../lib/validation');
+const { getUserById } = require('./users');
 
 const CourseSchema = {
     subject: { required: true },
@@ -38,11 +39,11 @@ exports.modifyCourse = async function (id, body) {
 };
 
 /*
- * Modify a student enrollment for a Course in the DB.
+ * Modify student enrollment for a Course in the DB.
  */
 exports.modifyEnrollment = async function (id, body) {
   const db = getDBReference();
-  const collection = db.collection('courses');
+  const courseCollection = db.collection('courses');
   const userCollection = db.collection('users');
   const modBus = JSON.parse(JSON.stringify(body));
 
@@ -53,14 +54,33 @@ exports.modifyEnrollment = async function (id, body) {
   //add students by id in the "add" array.
   for (var i = 0; i < addLength; i++) {
 
-       //UNDER CONSTRUCTION
-       //check that the given user id is a student.
+     console.log("== new ObjectId(id): ", new ObjectId(id));
+     console.log("== addArray[i]: ", addArray[i]);
 
-       //add the student to the course students array.
-       await collection.updateOne({_id: new ObjectId(id)}, {$push: { students: addArray[i] }});
+     //confirm that the given user is a student.
+     const user = await getUserById(addArray[i], false);
+     if (!user) {
+          console.log("== User", addArray[i], "is not a valid user. Ignore this user.");
+          continue;
+     }
+     if(user.role != "student") {
+       console.log("== User", user._id, "is not a student. Ignore this user.");
+       continue;
+     } else {
+       console.log("== User", user._id, "is a student.");
+     }
 
-       //add the course to the students courses array.
-       await userCollection.updateOne({_id: addArray[i]}, {$push: { courses: id }});
+     //remove duplicate instances from the course students array.
+     await courseCollection.updateOne({_id: new ObjectId(id)}, {$pull: { students: addArray[i] }});
+
+     //add the student to the course students array.
+     await courseCollection.updateOne({ _id: new ObjectId(id) }, {$push: { students: addArray[i] }});
+
+     //remove duplicate instances from the students courses array.
+     await userCollection.updateOne({ _id: user._id }, {$pull: { courses: id }});
+
+     //add the course to the students courses array.
+     await userCollection.updateOne({ _id: user._id }, {$push: { courses: id }});
 
   }
 
@@ -71,14 +91,24 @@ exports.modifyEnrollment = async function (id, body) {
   //remove students by id in the "remove" array.
   for (var i = 0; i < addLength; i++) {
 
-       //UNDER CONSTRUCTION
-       //check that the given user id is a student.
+     //confirm that the given user is a student.
+     const user = await getUserById(remArray[i], false);
+     if (!user) {
+           console.log("== User", remArray[i], "is not a valid user. Ignore this user.");
+           continue;
+     }
+     if(user.role != "student") {
+        console.log("== User", user._id, "is not a student. Ignore this user.");
+        continue;
+     } else {
+        console.log("== User", user._id, "is a student.");
+     }
 
-       //remove the student to the course students array.
-       await collection.updateOne({_id: new ObjectId(id)}, {$pull: { students: remArray[i] }});
+     //remove the student from the course students array.
+     await courseCollection.updateOne({ _id: new ObjectId(id) }, {$pull: { students: remArray[i] }});
 
-       //remove the course to the students courses array.
-       await userCollection.updateOne({_id: remArray[i]}, {$pull: { courses: id }});
+     //remove the course from the students courses array.
+     await userCollection.updateOne({ _id: user._id }, {$pull: { courses: id }});
 
   }
 
