@@ -183,46 +183,9 @@ router.get('/:id', requireAuthentication, async (req, res, next) => {
 
 		if (user) {
 
-			//if the user is an instructor, return the courses they teach.
-			if (user.role == "instructor") {
-
-				//UNDER CONSTRUCTION:
-				//will need to add logic to show instructors that
-				//have teaching meta-data attaching to this course.
-				//return placeholder data for now.
-				res.status(200).send({
-					subject: "CS",
-					number: 493,
-					title: "Cloud Application Development",
-					term: "sp19",
-					instructorId: "123"
-				});
-
-			}
-
-			//if the user is a student, return the courses they are enrolled in.
-			if (user.role == "student") {
-
-				//UNDER CONSTRUCTION:
-				//will need to add logic to show students that
-				//have enrollment meta-data attaching to this course.
-				//return placeholder data for now.
-				res.status(200).send({
-					subject: "MTH",
-					number: 101,
-					title: "Basic Math",
-					term: "sp19",
-					instructorId: "641"
-				});
-
-			}
-
-			//we get a 404 error if we try to find any other role.
-			if (user.role == "admin" || user.role == "none") {
-				res.status(404).send({
-					error: "Specified User id not found."
-				});
-			}
+			//return user info.
+               const user = await getUserById(req.params.id);
+			res.status(200).send(user);
 
 		} else {
 			res.status(404).send({

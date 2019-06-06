@@ -176,6 +176,8 @@ router.patch('/:id', requireAuthentication, async (req, res, next) => {
 	if (course) {
 
 		//only admins and the course instructor can update courses.
+          console.log("== course.instructorid: ", course.instructorid);
+          console.log("== req.userId: ", req.userId);
 		if (req.userRole == "admin" || course.instructorid == req.userId ) {
 
 			//confirm that the request body contain at least one valid field.
@@ -185,7 +187,7 @@ router.patch('/:id', requireAuthentication, async (req, res, next) => {
 
 					//update the course and return a success status.
 					const id = await modifyCourse(req.params.id, req.body);
-					res.status(201).send({});
+					res.status(201).send();
 
 				} catch (err) {
 					console.error(err);
@@ -244,7 +246,7 @@ router.delete('/:id', tagRole, async (req, res, next) => {
 		if (deleteSuccessful) {
 
 			//return success status.
-			res.status(204).send({});
+			res.status(204).send();
 
 		} else {
 			res.status(404).send({
@@ -309,8 +311,8 @@ router.post('/:id/students', requireAuthentication, async (req, res, next) => {
 				try {
 
 					//add and/or remove students from the course and return a success status.
-					const id = await modifyEnrollment(req.params.id, req.body);
-					res.status(201).send({});
+					await modifyEnrollment(req.params.id, req.body);
+					res.status(201).send();
 
 				} catch (err) {
 					console.error(err);

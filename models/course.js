@@ -49,7 +49,6 @@ exports.modifyEnrollment = async function (id, body) {
   //get the add array.
   const addArray = modBus.add;
   const addLength = addArray.length;
-  console.log("== addArray: \n", addArray);
 
   //add students by id in the "add" array.
   for (var i = 0; i < addLength; i++) {
@@ -68,12 +67,22 @@ exports.modifyEnrollment = async function (id, body) {
   //get the remove array.
   const remArray = modBus.remove;
   const remLength = remArray.length;
-  console.log("== remArray: \n", remArray);
 
-  //UNDER CONSTRUCTION
   //remove students by id in the "remove" array.
+  for (var i = 0; i < addLength; i++) {
 
-  return collection;
+       //UNDER CONSTRUCTION
+       //check that the given user id is a student.
+
+       //remove the student to the course students array.
+       await collection.updateOne({_id: new ObjectId(id)}, {$pull: { students: remArray[i] }});
+
+       //remove the course to the students courses array.
+       await userCollection.updateOne({_id: remArray[i]}, {$pull: { courses: id }});
+
+  }
+
+  return true;
 };
 
 /*
