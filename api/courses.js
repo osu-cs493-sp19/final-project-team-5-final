@@ -24,7 +24,7 @@ const {
 
     RES: (yaml says submissions, I replaced it with courses)
     {
-        "courses": 
+        "courses":
         [
             {
                 "subject": "CS",
@@ -45,7 +45,7 @@ router.get('/', async (req, res, next) => {
 		//get the current page and meta data and return it.
 		const coursesPage = await getCoursesPage(parseInt(req.query.page) || 1, 5);
 		res.status(200).send(coursesPage);
-	
+
 	} catch (err) {
 		console.error(err);
 		res.status(500).send({
@@ -56,7 +56,7 @@ router.get('/', async (req, res, next) => {
 });
 
 
-/* 
+/*
     POST /courses
 
     Must be authenticated as admin to create a course
@@ -73,20 +73,20 @@ router.get('/', async (req, res, next) => {
     201 { "id": "123" }
     400 { error: The request body was either not present or did not contain a valid Course object. }
     403 Not authorized
-    
+
 */
 router.post('/', tagRole, async (req, res, next) => {
 
 	//only admins can post new courses.
 	if (req.userRole == "admin") {
-		
+
 		//confirm that the request body contains a valid course.
 		if (validateAgainstSchema(req.body, CourseSchema)) {
-		
+
 			try {
-				
+
 				//adds the new course and then returns the id.
-				const id = await insertNewCourse(req.body); 
+				const id = await insertNewCourse(req.body);
 				res.status(201).send({
 					_id: id
 				});
@@ -97,7 +97,7 @@ router.post('/', tagRole, async (req, res, next) => {
 					error: "Error inserting new course. Try again later."
 				});
 			}
-		
+
 		} else {
 			res.status(400).send({
 				error: "The request body was either not present or did not contain a valid Course object."
@@ -136,14 +136,14 @@ router.get('/:id', async (req, res, next) => {
 
 	//get course information.
 	const course = await getCourseById(req.params.id, false, false);
-	
+
 	if (course) {
-		
+
 		//return course info.
 		res.status(200).send({
 			course: course
 		});
-			
+
 	} else {
 		res.status(404).send({
 			error: "Specified Course id not found."
@@ -160,7 +160,7 @@ router.get('/:id', async (req, res, next) => {
 
     REQ: See req.body for Post route, none are required due to it being a patch request (I believe)
 
-    RES: 
+    RES:
     200
     400: body not present, or did not contain any fields related to Course objects
     403: user not authenticated
@@ -171,20 +171,20 @@ router.patch('/:id', requireAuthentication, async (req, res, next) => {
 
 	//start by getting the course info.
 	const course = await getCourseById(req.params.id, false, false);
-	
+
 	//only continue if we found the course.
 	if (course) {
-		
+
 		//only admins and the course instructor can update courses.
 		if (req.userRole == "admin" || course.instructorid == req.userId ) {
-			
+
 			//confirm that the request body contain at least one valid field.
 			if (validateAgainstSchemaPatch(req.body, CourseSchema)) {
-			
+
 				try {
-					
+
 					//update the course and return a success status.
-					const id = await modifyCourse(req.params.id, req.body); 
+					const id = await modifyCourse(req.params.id, req.body);
 					res.status(201).send({});
 
 				} catch (err) {
@@ -193,7 +193,7 @@ router.patch('/:id', requireAuthentication, async (req, res, next) => {
 						error: "Error updating course. Try again later."
 					});
 				}
-			
+
 			} else {
 				res.status(400).send({
 					error: "The request body was either not present or did not contain any fields related to Course objects."
@@ -236,16 +236,16 @@ router.delete('/:id', tagRole, async (req, res, next) => {
 
 	//only admins can remove a course.
 	if (req.userRole == "admin") {
-		
+
 		//remove the course.
-		const deleteSuccessful = await deleteCourseByID(req.params.id); 
+		const deleteSuccessful = await deleteCourseByID(req.params.id);
 
 		//see if we could find the course to delete.
 		if (deleteSuccessful) {
-		
+
 			//return success status.
 			res.status(204).send({});
-		
+
 		} else {
 			res.status(404).send({
 				error: "Course id not found."
@@ -278,7 +278,7 @@ router.get('/:id/students', async (req, res, next) => {
 });
 
 
-/* 
+/*
     POST /courses/{id}/students
 
     Add/remove students from a course.
@@ -291,25 +291,25 @@ router.get('/:id/students', async (req, res, next) => {
     403: not authenticated properly
     404: course not found
 */
-router.post('/:id/students', async (req, res, next) => {
+router.post('/:id/students', requireAuthentication, async (req, res, next) => {
 
 	//start by getting the course info.
 	const course = await getCourseById(req.params.id, false, false);
-	
+
 	//only continue if we found the course.
 	if (course) {
-		
+
 		//only admins and the course instructor can add students to the course.
 		if (req.userRole == "admin" || course.instructorid == req.userId ) {
-			
+
 			//confirm that the request body is valid.
 			//if (validateAgainstSchema(req.body, CourseSchema)) {
 			if (true) {
-			
+
 				try {
-					
+
 					//add and/or remove students from the course and return a success status.
-					//const id = await modifyEnrollment(req.params.id, req.body); 
+					const id = await modifyEnrollment(req.params.id, req.body);
 					res.status(201).send({});
 
 				} catch (err) {
@@ -318,7 +318,7 @@ router.post('/:id/students', async (req, res, next) => {
 						error: "Error updating course. Try again later."
 					});
 				}
-			
+
 			} else {
 				res.status(400).send({
 					error: "The request body was either not present or did not contain a valid enrollment object."
@@ -338,7 +338,7 @@ router.post('/:id/students', async (req, res, next) => {
 
 });
 
-/* 
+/*
     GET /courses/{id}/roster
 
     Returns a CSV file containing info about enrolled students: names, IDs, emails.
@@ -366,7 +366,7 @@ router.get('/:id/roster', async (req, res, next) => {
     REQ:
 
     RES:
-    200: { "assignments": ["123", "456"] } 
+    200: { "assignments": ["123", "456"] }
     404: Course id not found
 */
 router.get('/:id/assignments', async (req, res, next) => {

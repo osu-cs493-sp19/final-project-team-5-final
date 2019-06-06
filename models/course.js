@@ -43,11 +43,37 @@ exports.modifyCourse = async function (id, body) {
 exports.modifyEnrollment = async function (id, body) {
   const db = getDBReference();
   const collection = db.collection('courses');
+  const userCollection = db.collection('users');
   const modBus = JSON.parse(JSON.stringify(body));
-  console("== modBus: \n", modBus);
-  //remove students by id in the "remove" array.
+
+  //get the add array.
+  const addArray = modBus.add;
+  const addLength = addArray.length;
+  console.log("== addArray: \n", addArray);
+
   //add students by id in the "add" array.
-  return await collection.updateOne({_id: new ObjectId(id)}, {$set: modBus});
+  for (var i = 0; i < addLength; i++) {
+
+       //UNDER CONSTRUCTION
+       //check that the given user id is a student.
+
+       //add the student to the course students array.
+       await collection.updateOne({_id: new ObjectId(id)}, {$push: { students: addArray[i] }});
+
+       //add the course to the students courses array.
+       await userCollection.updateOne({_id: addArray[i]}, {$push: { courses: id }});
+
+  }
+
+  //get the remove array.
+  const remArray = modBus.remove;
+  const remLength = remArray.length;
+  console.log("== remArray: \n", remArray);
+
+  //UNDER CONSTRUCTION
+  //remove students by id in the "remove" array.
+
+  return collection;
 };
 
 /*
