@@ -107,9 +107,6 @@ exports.modifyEnrollment = async function (id, body) {
   //add students by id in the "add" array.
   for (var i = 0; i < addLength; i++) {
 
-     console.log("== new ObjectId(id): ", new ObjectId(id));
-     console.log("== addArray[i]: ", addArray[i]);
-
      //confirm that the given user is a student.
      const user = await getUserById(addArray[i], false);
      if (!user) {
@@ -245,3 +242,60 @@ exports.getCoursesPage = async function (page, pageSize) {
         last: "/courses?page="+pages.toString()
     };
 }
+
+/*
+ * Export CSV file for a specific course that contains student info.
+ */
+ exports.generateCSV = async function (id) {
+     const db = getDBReference();
+     const courseCollection = db.collection('courses');
+     const userCollection = db.collection('users');
+
+     //get the course information.
+     if (!ObjectId.isValid(id)) {
+       return null;
+     } else {
+       const course = await courseCollection
+         .find({ _id: new ObjectId(id) })
+         .toArray();
+       return results[0];
+     };
+
+     //get each students info.
+     const studentArray = course.students;
+     const studentLength = studentArray.length;
+     const csvArray = [];
+
+     //extract student info one at a time.
+     for (var i = 0; i < studentLength; i++) {
+
+          //confirm that the given user is a student.
+          const user = await getUserById(addArray[i], false);
+          if (!user) {
+               console.log("== User", addArray[i], "is not a valid user. Ignore this user.");
+               continue;
+          }
+          if(user.role != "student") {
+               console.log("== User", user._id, "is not a student. Ignore this user.");
+               continue;
+          } else {
+               console.log("== User", user._id, "is a student.");
+          }
+
+          //remove duplicate instances from the course students array.
+          await courseCollection.updateOne({_id: new ObjectId(id)}, {$pull: { students: addArray[i] }});
+
+          //add the student to the course students array.
+          await courseCollection.updateOne({ _id: new ObjectId(id) }, {$push: { students: addArray[i] }});
+
+          //remove duplicate instances from the students courses array.
+          await userCollection.updateOne({ _id: user._id }, {$pull: { courses: id }});
+
+          //add the course to the students courses array.
+          await userCollection.updateOne({ _id: user._id }, {$push: { courses: id }});
+
+     }
+
+     //convert the course info into a CSV file.
+
+ }
