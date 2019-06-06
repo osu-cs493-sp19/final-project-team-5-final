@@ -291,7 +291,35 @@ router.delete('/:id', tagRole, async (req, res, next) => {
     403: Invalid authentication
     404: Course not found
 */
-router.get('/:id/students', async (req, res, next) => {
+router.get('/:id/students', requireAuthentication, async (req, res, next) => {
+
+	//get course information.
+	const course = await getCourseById(req.params.id, true);
+
+     //confirm that the course exists.
+	if (course) {
+
+          //only admins and the course instructor can get student info.
+          console.log("== course.instructorid: ", course.instructorid);
+          console.log("== req.userId: ", req.userId);
+          if (req.userRole == "admin" || course.instructorid == req.userId ) {
+
+     		//return course student info.
+     		res.status(200).send({
+     			students: course.students
+     		});
+
+          } else {
+               res.status(403).send({
+				error: "The request was not made by an authenticated User satisfying the authorization criteria."
+			});
+          }
+
+	} else {
+		res.status(404).send({
+			error: "Specified Course id not found."
+		});
+	}
 
 });
 
@@ -374,7 +402,6 @@ router.post('/:id/students', requireAuthentication, async (req, res, next) => {
 router.get('/:id/roster', async (req, res, next) => {
 
 });
-
 
 /*
     GET /courses/{id}/assignments

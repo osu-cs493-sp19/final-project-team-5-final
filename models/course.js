@@ -142,7 +142,7 @@ exports.modifyEnrollment = async function (id, body) {
   const remLength = remArray.length;
 
   //remove students by id in the "remove" array.
-  for (var i = 0; i < addLength; i++) {
+  for (var i = 0; i < remLength; i++) {
 
      //confirm that the given user is a student.
      const user = await getUserById(remArray[i], false);
