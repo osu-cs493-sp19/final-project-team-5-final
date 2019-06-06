@@ -198,9 +198,17 @@ router.patch('/:id', requireAuthentication, async (req, res, next) => {
 
 				try {
 
-					//update the course and return a success status.
+					//update the course and return a success status if
+                         //a valid new instructor is provided (or no instructor).
 					const id = await modifyCourse(req.params.id, req.body);
-					res.status(201).send();
+
+                         if (id) {
+                              res.status(201).send();
+                         } else {
+                              res.status(400).send({
+                                   error: "The request body did not contain a valid instructor."
+                              });
+                         }
 
 				} catch (err) {
 					console.error(err);

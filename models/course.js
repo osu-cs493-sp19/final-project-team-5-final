@@ -52,9 +52,43 @@ exports.insertNewCourse = async function (course) {
  */
 exports.modifyCourse = async function (id, body) {
   const db = getDBReference();
-  const collection = db.collection('courses');
+  const courseCollection = db.collection('courses');
+  const userCollection = db.collection('users');
   const modBus = JSON.parse(JSON.stringify(body));
-  return await collection.updateOne({_id: new ObjectId(id)}, {$set: modBus});
+
+  //if we are changing the instructor then this needs
+  //to change the instructors course lists as well.
+  if (modBus.hasOwnProperty('instructorid')) {
+
+     console.log("== instructorid is being changed.");
+
+     //confirm that the given user is an instructor.
+     const user = await getUserById(modBus.instructorid, false);
+     if (!user) {
+         console.log("== User", modBus.instructorid, "is not a valid user.");
+         return 0;
+     }
+     if(user.role != "instructor") {
+        console.log("== User", modBus.instructorid, "is not an instructor.");
+        return 0 ;
+
+     } else {
+        console.log("== User", modBus.instructorid, "is an instructor.");
+
+     }
+
+     //remove the course from all instructors.
+     await userCollection.updateMany({ role: "instructor" }, {$pull: { courses: id }});
+
+     //add the course to the new instructors courses array.
+     await userCollection.updateOne({ _id: user._id }, {$push: { courses: id }});
+
+  } else {
+     console.log("== instructorid is unchanged.");
+  }
+
+  //update the course.
+  return await courseCollection.updateOne({_id: new ObjectId(id)}, {$set: modBus});
 };
 
 /*
