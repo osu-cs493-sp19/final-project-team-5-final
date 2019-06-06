@@ -389,6 +389,23 @@ router.get('/:id/roster', async (req, res, next) => {
 */
 router.get('/:id/assignments', async (req, res, next) => {
 
+     	//get course information.
+     	const course = await getCourseById(req.params.id, true);
+
+          //confirm that the course exists.
+     	if (course) {
+
+     		//return course assignment info.
+     		res.status(200).send({
+     			assignments: course.assignments
+     		});
+
+     	} else {
+     		res.status(404).send({
+     			error: "Specified Course id not found."
+     		});
+     	}
+
 });
 
 module.exports = router;

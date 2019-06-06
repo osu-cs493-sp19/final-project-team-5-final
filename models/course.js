@@ -193,11 +193,11 @@ exports.deleteCourseByID = async function (id) {
   //remove this course from all student and instructor lists.
   await userCollection.updateMany({}, {$pull: { courses: id }});
 
-  //UNDER CONSTRUCTION:
-  //will need function to remove all assignments from the course as well.
+  //remove all assignments that are connected to this course.
+  await assignmentCollection.deleteMany({ courseid: id });
 
   //remove the course from the "coures" collection.
-  return await courseCollection.deleteOne({_id: new ObjectId(id)});
+  return await courseCollection.deleteOne({ _id: new ObjectId(id) });
 };
 
 
@@ -224,6 +224,32 @@ exports.getCourseById = getCourseById;
  * Get specific page of courses.
  */
 exports.getCoursesPage = async function (page, pageSize) {
+    const db = getDBReference();
+    const collection = db.collection('courses');
+    var numResults = await collection.countDocuments();
+    var pages = Math.max(Math.ceil (numResults / pageSize),1);
+    var offset = (page - 1) * pageSize;
+    var queryResults = await collection.find({})
+    .project({ students: 0 , assignments: 0 })
+    .sort({ _id: 1 })
+    .skip(offset)
+    .limit(pageSize)
+    .toArray();
+    return {
+        courses: queryResults,
+        results: numResults,
+        page: page,
+        totalpages: pages,
+        first: "/courses?page=1",
+        next: "/courses?page="+Math.min(page+1,pages).toString(),
+        last: "/courses?page="+pages.toString()
+    };
+}
+
+/*
+ * Get all course assignments.
+ */
+exports.getCourseAssignments = async function (page, pageSize) {
     const db = getDBReference();
     const collection = db.collection('courses');
     var numResults = await collection.countDocuments();
