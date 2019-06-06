@@ -87,9 +87,18 @@ router.post('/', tagRole, async (req, res, next) => {
 
 				//adds the new course and then returns the id.
 				const id = await insertNewCourse(req.body);
-				res.status(201).send({
-					_id: id
-				});
+
+                    //if the selected user was an instructor
+                    //then reutrn the id of the course.
+                    if (id) {
+     				res.status(201).send({
+     					_id: id
+     				});
+                    } else {
+                         res.status(400).send({
+                              error: "The request body did not contain a valid instructor."
+                         });
+                    }
 
 			} catch (err) {
 				console.error(err);
@@ -234,11 +243,6 @@ router.patch('/:id', requireAuthentication, async (req, res, next) => {
 
 */
 router.delete('/:id', tagRole, async (req, res, next) => {
-
-	//UNDER CONSTRUCTION:
-	//will need to add logic to delete meta-data
-	//from students about the courses they are enrolled in, and
-	//remove all related assignments.
 
 	//only admins can remove a course.
 	if (req.userRole == "admin") {

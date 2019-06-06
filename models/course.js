@@ -19,12 +19,31 @@ exports.CourseSchema = CourseSchema;
 exports.insertNewCourse = async function (course) {
   const courseToInsert = extractValidFields(course, CourseSchema);
   const db = getDBReference();
-  const collection = db.collection('courses');
+  const courseCollection = db.collection('courses');
+  const userCollection = db.collection('users');
 
-  const result = await collection.insertOne(courseToInsert);
+  //confirm that the given user is an instructor.
+  const user = await getUserById(course.instructorid, false);
+  if (!user) {
+       console.log("== User", course.instructorid, "is not a valid user.");
+       return 0;
+  }
+  if(user.role != "instructor") {
+     console.log("== User", course.instructorid, "is not an instructor.");
+     return 0 ;
+  } else {
+     console.log("== User", course.instructorid, "is an instructor.");
+  }
+
+  //add the course to the database.
+  const result = await courseCollection.insertOne(courseToInsert);
+
+  //add the course to the instructors courses array.
+  const courseid = result.insertedId.toString();
+  await userCollection.updateOne({ _id: user._id }, {$push: { courses: courseid }});
 
   //add empty students and assignments fields to the course.
-  await collection.updateOne({_id: result.insertedId}, {$set: { students: [] , assignments: [] }});
+  await courseCollection.updateOne({_id: result.insertedId}, {$set: { students: [] , assignments: [] }});
   return result.insertedId;
 };
 
@@ -64,10 +83,10 @@ exports.modifyEnrollment = async function (id, body) {
           continue;
      }
      if(user.role != "student") {
-       console.log("== User", user._id, "is not a student. Ignore this user.");
-       continue;
+          console.log("== User", user._id, "is not a student. Ignore this user.");
+          continue;
      } else {
-       console.log("== User", user._id, "is a student.");
+          console.log("== User", user._id, "is a student.");
      }
 
      //remove duplicate instances from the course students array.
@@ -123,6 +142,19 @@ exports.deleteCourseByID = async function (id) {
   const courseCollection = db.collection('courses');
   const userCollection = db.collection('users');
   const assignmentCollection = db.collection('assignments');
+
+  //get the course.
+  if (!ObjectId.isValid(id)) {
+    return 0;
+  }
+  const results = await courseCollection
+    .find({ _id: new ObjectId(id) })
+    .toArray();
+
+  //if there is not a course then we can't delete it.
+  if (results.length < 1) {
+       return 0;
+ }
 
   //remove this course from all student and instructor lists.
   await userCollection.updateMany({}, {$pull: { courses: id }});
