@@ -25,7 +25,7 @@ exports.insertNewUser = async function (user) {
   const result = await collection.insertOne(userToInsert);
 
   //add empty courses field to the user.
-  await collection.updateOne({_id: result.insertedId}, {$set: { courses: [] });
+  await collection.updateOne({_id: result.insertedId}, {$set: { courses: [] }});
 
   return result.insertedId;
 };

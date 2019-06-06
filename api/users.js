@@ -28,7 +28,7 @@ const {
       "role": "student"
     }
 
-    Res: 
+    Res:
     201: { id: 123 }
     400: { error: The request body was either not present or did not contain a valid User object. }
     403: { error: The request was not made by an authenticated User satisfying the authorization criteria described above. }
@@ -39,11 +39,11 @@ router.post('/', tagRole, async (req, res, next) => {
 
 	//confirm that the request body contains a valid user.
 	if (validateAgainstSchema(req.body, UserSchema)) {
-		
+
 		try {
 			//added by middleware tagRole.
 			if (req.userRole == "admin") {
-				
+
 				//adds the new user and then returns the id.
 				const id = await insertNewUser(req.body);
 				res.status(201).send({
@@ -53,8 +53,8 @@ router.post('/', tagRole, async (req, res, next) => {
 			} else {
 
 				//only admins can create 'admin' or 'instructor' roles.
-				if (req.body.role == "admin" || req.body.role == "instructor") { 
-					
+				if (req.body.role == "admin" || req.body.role == "instructor") {
+
 					//adds the new user and then returns the id.
 					const id = await insertNewUser(req.body);
 					res.status(201).send({
@@ -87,7 +87,7 @@ router.post('/', tagRole, async (req, res, next) => {
 
 });
 
-/* 
+/*
     POST /users/login
     Req:
     {
@@ -107,32 +107,32 @@ router.post('/login', async (req, res, next) => {
 
 	//make sure that all fields are provided.
 	if (req.body && req.body.email && req.body.password) {
-	
+
 		try {
-			
+
 			//validate user info and get id.
 			const user = await getUserByEmail(req.body.email);
 			console.log("== user:\n", user);
-			
+
 			//if the user exists then attempt to authenticate.
 			if(user) {
-			
+
 				const authenticated = await validateUser(user._id, req.body.password);
-			
+
 				if (authenticated) {
-				
+
 					//use our user info to generate a token and return it.
 					const token = generateAuthToken(user);
 					res.status(200).send({
 						token: token
 					});
-					
+
 				} else {
 					res.status(401).send({
 						error: "The specified credentials were invalid."
 					});
-				}	
-			
+				}
+
 			} else {
 				res.status(401).send({
 					error: "The specified credentials were invalid.."
@@ -155,7 +155,7 @@ router.post('/login', async (req, res, next) => {
 
 });
 
-/* 
+/*
     GET /users/{id}
     Req:
 
@@ -180,14 +180,14 @@ router.get('/:id', requireAuthentication, async (req, res, next) => {
 
 		//get user information.
 		const user = await getUserById(req.params.id, false);
-		
+
 		if (user) {
-			
+
 			//if the user is an instructor, return the courses they teach.
 			if (user.role == "instructor") {
-			
+
 				//UNDER CONSTRUCTION:
-				//will need to add logic to show instructors that 
+				//will need to add logic to show instructors that
 				//have teaching meta-data attaching to this course.
 				//return placeholder data for now.
 				res.status(200).send({
@@ -197,14 +197,14 @@ router.get('/:id', requireAuthentication, async (req, res, next) => {
 					term: "sp19",
 					instructorId: "123"
 				});
-			
+
 			}
-			
+
 			//if the user is a student, return the courses they are enrolled in.
 			if (user.role == "student") {
-				
+
 				//UNDER CONSTRUCTION:
-				//will need to add logic to show students that 
+				//will need to add logic to show students that
 				//have enrollment meta-data attaching to this course.
 				//return placeholder data for now.
 				res.status(200).send({
@@ -214,11 +214,11 @@ router.get('/:id', requireAuthentication, async (req, res, next) => {
 					term: "sp19",
 					instructorId: "641"
 				});
-				
+
 			}
 
-			//we get a 404 error if we try to find an admin.
-			if (user.role == "admin") {
+			//we get a 404 error if we try to find any other role.
+			if (user.role == "admin" || user.role == "none") {
 				res.status(404).send({
 					error: "Specified User id not found."
 				});
@@ -229,7 +229,7 @@ router.get('/:id', requireAuthentication, async (req, res, next) => {
 				error: "Specified User id not found."
 			});
 		}
-	
+
 	} else {
 		res.status(403).send({
 			error: "Not authorized."

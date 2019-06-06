@@ -8,7 +8,7 @@ const CourseSchema = {
     number: { required: true },
     title: { required: true },
     term: { required: true },
-    instructorid: { require: true }
+    instructorid: { required: true }
 };
 exports.CourseSchema = CourseSchema;
 
@@ -21,9 +21,9 @@ exports.insertNewCourse = async function (course) {
   const collection = db.collection('courses');
 
   const result = await collection.insertOne(courseToInsert);
-  
+
   //add empty students and assignments fields to the course.
-  await collection.updateOne({_id: result.insertedId}, {$set: { students: [] , assignments: [] });
+  await collection.updateOne({_id: result.insertedId}, {$set: { students: [] , assignments: [] }});
   return result.insertedId;
 };
 
