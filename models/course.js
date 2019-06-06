@@ -19,9 +19,11 @@ exports.insertNewCourse = async function (course) {
   const courseToInsert = extractValidFields(course, CourseSchema);
   const db = getDBReference();
   const collection = db.collection('courses');
+
   const result = await collection.insertOne(courseToInsert);
-  //add an empty students field to the course.
-  //await collection.updateOne({_id: result.insertedId}, { $addFields: { students: [] }}); 
+  
+  //add empty students and assignments fields to the course.
+  await collection.updateOne({_id: result.insertedId}, {$set: { students: [] , assignments: [] });
   return result.insertedId;
 };
 

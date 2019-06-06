@@ -23,6 +23,10 @@ exports.insertNewUser = async function (user) {
   userToInsert.password = passwordHash;
 
   const result = await collection.insertOne(userToInsert);
+
+  //add empty courses field to the user.
+  await collection.updateOne({_id: result.insertedId}, {$set: { courses: [] });
+
   return result.insertedId;
 };
 
