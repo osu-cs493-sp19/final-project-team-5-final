@@ -252,27 +252,22 @@ exports.getCoursesPage = async function (page, pageSize) {
      const userCollection = db.collection('users');
 
      //get the course information.
-     if (!ObjectId.isValid(id)) {
-       return null;
-     } else {
-       const course = await courseCollection
-         .find({ _id: new ObjectId(id) })
-         .toArray();
-       return results[0];
-     };
+     const course = await courseCollection
+       .find({ _id: new ObjectId(id) })
+       .toArray();
 
      //get each students info.
-     const studentArray = course.students;
+     const studentArray = course[0].students;
      const studentLength = studentArray.length;
-     const csvArray = [];
+     var csvArray = [];
 
      //extract student info one at a time.
      for (var i = 0; i < studentLength; i++) {
 
           //confirm that the given user is a student.
-          const user = await getUserById(addArray[i], false);
+          const user = await getUserById(studentArray[i], false);
           if (!user) {
-               console.log("== User", addArray[i], "is not a valid user. Ignore this user.");
+               console.log("== User is not a valid user. Ignore this user.");
                continue;
           }
           if(user.role != "student") {
@@ -282,20 +277,20 @@ exports.getCoursesPage = async function (page, pageSize) {
                console.log("== User", user._id, "is a student.");
           }
 
-          //remove duplicate instances from the course students array.
-          await courseCollection.updateOne({_id: new ObjectId(id)}, {$pull: { students: addArray[i] }});
-
-          //add the student to the course students array.
-          await courseCollection.updateOne({ _id: new ObjectId(id) }, {$push: { students: addArray[i] }});
-
-          //remove duplicate instances from the students courses array.
-          await userCollection.updateOne({ _id: user._id }, {$pull: { courses: id }});
-
-          //add the course to the students courses array.
-          await userCollection.updateOne({ _id: user._id }, {$push: { courses: id }});
+          //push the users CSV info to the CSV array.
+          csvArray.push([ user._id.toString(), user.name.toString(), user.email.toString() ]);
 
      }
 
-     //convert the course info into a CSV file.
+     //convert the csvArray into a CSV file.
+     let csvContent = "data:text/csv;charset=utf-8,"
+    + csvArray.map(e => e.join(",")).join("\n");
 
+    //enable downloading for CSV file.
+    var encodedUri = encodeURI(csvContent);
+    //window.open(encodedUri);
+
+    console.log("*** encodedUri: ", encodedUri);
+
+    return encodedUri;
  }
