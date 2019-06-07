@@ -19,12 +19,31 @@ exports.CourseSchema = CourseSchema;
 exports.insertNewCourse = async function (course) {
   const courseToInsert = extractValidFields(course, CourseSchema);
   const db = getDBReference();
-  const collection = db.collection('courses');
+  const courseCollection = db.collection('courses');
+  const userCollection = db.collection('users');
 
-  const result = await collection.insertOne(courseToInsert);
+  //confirm that the given user is an instructor.
+  const user = await getUserById(course.instructorid, false);
+  if (!user) {
+       console.log("== User", course.instructorid, "is not a valid user.");
+       return 0;
+  }
+  if(user.role != "instructor") {
+     console.log("== User", course.instructorid, "is not an instructor.");
+     return 0 ;
+  } else {
+     console.log("== User", course.instructorid, "is an instructor.");
+  }
+
+  //add the course to the database.
+  const result = await courseCollection.insertOne(courseToInsert);
+
+  //add the course to the instructors courses array.
+  const courseid = result.insertedId.toString();
+  await userCollection.updateOne({ _id: user._id }, {$push: { courses: courseid }});
 
   //add empty students and assignments fields to the course.
-  await collection.updateOne({_id: result.insertedId}, {$set: { students: [] , assignments: [] }});
+  await courseCollection.updateOne({_id: result.insertedId}, {$set: { students: [] , assignments: [] }});
   return result.insertedId;
 };
 
@@ -33,9 +52,43 @@ exports.insertNewCourse = async function (course) {
  */
 exports.modifyCourse = async function (id, body) {
   const db = getDBReference();
-  const collection = db.collection('courses');
+  const courseCollection = db.collection('courses');
+  const userCollection = db.collection('users');
   const modBus = JSON.parse(JSON.stringify(body));
-  return await collection.updateOne({_id: new ObjectId(id)}, {$set: modBus});
+
+  //if we are changing the instructor then this needs
+  //to change the instructors course lists as well.
+  if (modBus.hasOwnProperty('instructorid')) {
+
+     console.log("== instructorid is being changed.");
+
+     //confirm that the given user is an instructor.
+     const user = await getUserById(modBus.instructorid, false);
+     if (!user) {
+         console.log("== User", modBus.instructorid, "is not a valid user.");
+         return 0;
+     }
+     if(user.role != "instructor") {
+        console.log("== User", modBus.instructorid, "is not an instructor.");
+        return 0 ;
+
+     } else {
+        console.log("== User", modBus.instructorid, "is an instructor.");
+
+     }
+
+     //remove the course from all instructors.
+     await userCollection.updateMany({ role: "instructor" }, {$pull: { courses: id }});
+
+     //add the course to the new instructors courses array.
+     await userCollection.updateOne({ _id: user._id }, {$push: { courses: id }});
+
+  } else {
+     console.log("== instructorid is unchanged.");
+  }
+
+  //update the course.
+  return await courseCollection.updateOne({_id: new ObjectId(id)}, {$set: modBus});
 };
 
 /*
@@ -54,9 +107,6 @@ exports.modifyEnrollment = async function (id, body) {
   //add students by id in the "add" array.
   for (var i = 0; i < addLength; i++) {
 
-     console.log("== new ObjectId(id): ", new ObjectId(id));
-     console.log("== addArray[i]: ", addArray[i]);
-
      //confirm that the given user is a student.
      const user = await getUserById(addArray[i], false);
      if (!user) {
@@ -64,10 +114,10 @@ exports.modifyEnrollment = async function (id, body) {
           continue;
      }
      if(user.role != "student") {
-       console.log("== User", user._id, "is not a student. Ignore this user.");
-       continue;
+          console.log("== User", user._id, "is not a student. Ignore this user.");
+          continue;
      } else {
-       console.log("== User", user._id, "is a student.");
+          console.log("== User", user._id, "is a student.");
      }
 
      //remove duplicate instances from the course students array.
@@ -89,7 +139,7 @@ exports.modifyEnrollment = async function (id, body) {
   const remLength = remArray.length;
 
   //remove students by id in the "remove" array.
-  for (var i = 0; i < addLength; i++) {
+  for (var i = 0; i < remLength; i++) {
 
      //confirm that the given user is a student.
      const user = await getUserById(remArray[i], false);
@@ -120,8 +170,31 @@ exports.modifyEnrollment = async function (id, body) {
  */
 exports.deleteCourseByID = async function (id) {
   const db = getDBReference();
-  const collection = db.collection('courses');
-  return await collection.deleteOne({_id: new ObjectId(id)});
+  const courseCollection = db.collection('courses');
+  const userCollection = db.collection('users');
+  const assignmentCollection = db.collection('assignments');
+
+  //get the course.
+  if (!ObjectId.isValid(id)) {
+    return 0;
+  }
+  const results = await courseCollection
+    .find({ _id: new ObjectId(id) })
+    .toArray();
+
+  //if there is not a course then we can't delete it.
+  if (results.length < 1) {
+       return 0;
+ }
+
+  //remove this course from all student and instructor lists.
+  await userCollection.updateMany({}, {$pull: { courses: id }});
+
+  //remove all assignments that are connected to this course.
+  await assignmentCollection.deleteMany({ courseid: id });
+
+  //remove the course from the "coures" collection.
+  return await courseCollection.deleteOne({ _id: new ObjectId(id) });
 };
 
 
@@ -169,3 +242,55 @@ exports.getCoursesPage = async function (page, pageSize) {
         last: "/courses?page="+pages.toString()
     };
 }
+
+/*
+ * Export CSV file for a specific course that contains student info.
+ */
+ exports.generateCSV = async function (id) {
+     const db = getDBReference();
+     const courseCollection = db.collection('courses');
+     const userCollection = db.collection('users');
+
+     //get the course information.
+     const course = await courseCollection
+       .find({ _id: new ObjectId(id) })
+       .toArray();
+
+     //get each students info.
+     const studentArray = course[0].students;
+     const studentLength = studentArray.length;
+     var csvArray = [];
+
+     //extract student info one at a time.
+     for (var i = 0; i < studentLength; i++) {
+
+          //confirm that the given user is a student.
+          const user = await getUserById(studentArray[i], false);
+          if (!user) {
+               console.log("== User is not a valid user. Ignore this user.");
+               continue;
+          }
+          if(user.role != "student") {
+               console.log("== User", user._id, "is not a student. Ignore this user.");
+               continue;
+          } else {
+               console.log("== User", user._id, "is a student.");
+          }
+
+          //push the users CSV info to the CSV array.
+          csvArray.push([ user._id.toString(), user.name.toString(), user.email.toString() ]);
+
+     }
+
+     //convert the csvArray into a CSV file.
+     let csvContent = "data:text/csv;charset=utf-8,"
+    + csvArray.map(e => e.join(",")).join("\n");
+
+    //enable downloading for CSV file.
+    var encodedUri = encodeURI(csvContent);
+    //window.open(encodedUri);
+
+    console.log("*** encodedUri: ", encodedUri);
+
+    return encodedUri;
+ }

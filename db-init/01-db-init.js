@@ -77,3 +77,12 @@ db.assignments.insertMany([
     "due": new Date().toISOString()
   }
 ]);
+
+const aidA = db.assignments.findOne({title:"Assignment 2"})._id;
+const aidB = db.assignments.findOne({title: "Final Essay"})._id;
+
+db.users.updateOne({name:"Instructor A"}, {$set: { courses: [cidA] }});
+db.users.updateOne({name:"Instructor B"}, {$set: { courses: [cidB] }});
+
+db.courses.updateOne({subject:"CS", number:"493"}, {$set: { assignments: [aidA] }});
+db.courses.updateOne({subject:"WR", number:"327"}, {$set: { assignments: [aidB] }});
