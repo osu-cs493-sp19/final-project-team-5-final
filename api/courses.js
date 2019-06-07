@@ -200,7 +200,7 @@ router.patch('/:id', requireAuthentication, async (req, res, next) => {
 				try {
 
 					//update the course and return a success status if
-                         //a valid new instructor is provided (or no instructor).
+       			                //a valid new instructor is provided (or no instructor).
 					const id = await modifyCourse(req.params.id, req.body);
 
                          if (id) {
@@ -297,7 +297,7 @@ router.get('/:id/students', requireAuthentication, async (req, res, next) => {
 	//get course information.
 	const course = await getCourseById(req.params.id, true);
 
-     //confirm that the course exists.
+        //confirm that the course exists.
 	if (course) {
 
           //only admins and the course instructor can get student info.
@@ -405,7 +405,7 @@ router.get('/:id/roster', requireAuthentication, async (req, res, next) => {
      	//get course information.
      	const course = await getCourseById(req.params.id, true);
 
-          //confirm that the course exists.
+        //confirm that the course exists.
      	if (course) {
 
                //only admins and the course instructor can get student info.
@@ -413,9 +413,8 @@ router.get('/:id/roster', requireAuthentication, async (req, res, next) => {
                console.log("== req.userId: ", req.userId);
                if (req.userRole == "admin" || course.instructorid == req.userId ) {
 
-          		//return the CSV.
+          	    //return the CSV.
                     const csv = await generateCSV(req.params.id);
-                    console.log("=== CSV:\n", csv);
           		res.status(200).send(csv);
 
                } else {
@@ -448,7 +447,7 @@ router.get('/:id/assignments', async (req, res, next) => {
      	//get course information.
      	const course = await getCourseById(req.params.id, true);
 
-          //confirm that the course exists.
+        //confirm that the course exists.
      	if (course) {
 
      		//return course assignment info.
