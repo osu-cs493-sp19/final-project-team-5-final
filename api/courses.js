@@ -414,7 +414,8 @@ router.get('/:id/roster', requireAuthentication, async (req, res, next) => {
                if (req.userRole == "admin" || course.instructorid == req.userId ) {
 
           		//return the CSV.
-                    const csv = generateCSV(req.params.id);
+                    const csv = await generateCSV(req.params.id);
+                    console.log("=== CSV:\n", csv);
           		res.status(200).send(csv);
 
                } else {
