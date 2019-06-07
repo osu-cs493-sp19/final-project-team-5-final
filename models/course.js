@@ -259,7 +259,7 @@ exports.getCoursesPage = async function (page, pageSize) {
      //get each students info.
      const studentArray = course[0].students;
      const studentLength = studentArray.length;
-     var csvArray = [];
+     var data = [];
 
      //extract student info one at a time.
      for (var i = 0; i < studentLength; i++) {
@@ -277,20 +277,17 @@ exports.getCoursesPage = async function (page, pageSize) {
                console.log("== User", user._id, "is a student.");
           }
 
-          //push the users CSV info to the CSV array.
-          csvArray.push([ user._id.toString(), user.name.toString(), user.email.toString() ]);
+          //push the users CSV info to the data array.
+          data.push([ user._id.toString(), user.name.toString(), user.email.toString() ]);
 
      }
 
-     //convert the csvArray into a CSV file.
-     let csvContent = "data:text/csv;charset=utf-8,"
-    + csvArray.map(e => e.join(",")).join("\n");
+     //convert to CSV.
+     var csv = "ID,Name,Email\n";
+     data.forEach(function(row) {
+          csv += row.join(',');
+          csv += "\n";
+     });
 
-    //enable downloading for CSV file.
-    var encodedUri = encodeURI(csvContent);
-    //window.open(encodedUri);
-
-    console.log("*** encodedUri: ", encodedUri);
-
-    return encodedUri;
+    return csv;
  }
