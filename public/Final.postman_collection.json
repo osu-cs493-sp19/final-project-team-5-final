@@ -1,0 +1,400 @@
+{
+	"info": {
+		"_postman_id": "7c27c433-1277-4db7-be5b-0de7ad0bf3fe",
+		"name": "Final",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "users",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkB0YXJwYXVsaW4uZWR1IiwiaWQiOiI1Y2Y2ZTZkYzMwYzNiZWFhN2FkZjY2MDkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE1NTk2OTE1NzMsImV4cCI6MTU1OTc3Nzk3M30.tBJ_akt-_65TVhJKYYyBfzf1-jHahfFFVGGux_WpLqc",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Jane Doe\",\r\n  \"email\": \"doej@oregonstate.edu\",\r\n  \"password\": \"hunter2\",\r\n  \"role\": \"admin\"\r\n}"
+				},
+				"url": {
+					"raw": "localhost:8000/users",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "users/login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"admin@tarpaulin.edu\",\n\t\"password\": \"hunter2\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8000/users/login",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "users/{id}",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkB0YXJwYXVsaW4uZWR1IiwiaWQiOiI1Y2Y4OGYwZGU0OWJmZjA5ZWNkMGQ2YjAiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE1NTk3OTgxOTEsImV4cCI6MTU1OTg4NDU5MX0.ESmhKQwRFZ8xFmB45_8OXFnILm02w8Zj4y3VQk75hik",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8000/users/5cf9811535814a76607cf8a2",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"5cf9811535814a76607cf8a2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "courses",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdHVkZW50YUB0YXJwYXVsaW4uZWR1IiwiaWQiOiI1Y2Y2ZTZkYzMwYzNiZWFhN2FkZjY2MGMiLCJyb2xlIjoic3R1ZGVudCIsImlhdCI6MTU1OTY4NjAwNywiZXhwIjoxNTU5NzcyNDA3fQ.bSFtUGZj2NJ3_rHPwBgptl_FkRhlDaIbX033auszPcI",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "localhost:8000/courses",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"courses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "courses",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkB0YXJwYXVsaW4uZWR1IiwiaWQiOiI1Y2Y2ZTZkYzMwYzNiZWFhN2FkZjY2MDkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE1NTk3ODcxOTUsImV4cCI6MTU1OTg3MzU5NX0.YAQpTYAaoX7CHRNKWn6YQjBLoJ4M_6SxBnNs27RDVRY",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"subject\": \"MTH\",\r\n  \"number\": 111,\r\n  \"title\": \"Basic Math\",\r\n  \"term\": \"sp19\",\r\n  \"instructorid\": \"5cf96653b5d5ecc3557133ad\"\r\n}"
+				},
+				"url": {
+					"raw": "localhost:8000/courses",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"courses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "courses/{id}",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdHVkZW50YUB0YXJwYXVsaW4uZWR1IiwiaWQiOiI1Y2Y2ZTZkYzMwYzNiZWFhN2FkZjY2MGMiLCJyb2xlIjoic3R1ZGVudCIsImlhdCI6MTU1OTY4NjAwNywiZXhwIjoxNTU5NzcyNDA3fQ.bSFtUGZj2NJ3_rHPwBgptl_FkRhlDaIbX033auszPcI",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "localhost:8000/courses/5cf9811535814a76607cf8a6",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"courses",
+						"5cf9811535814a76607cf8a6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "courses/{id}",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkB0YXJwYXVsaW4uZWR1IiwiaWQiOiI1Y2Y5NWQ1MDk0MTliODYwMmQzZDgwOWMiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE1NTk4NDcyNjcsImV4cCI6MTU1OTkzMzY2N30.swpppYueiF_Nq9EEl1aw9fN45SFr-1yXk7SyS1PtT64",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"subject\": \"ECE\",\r\n  \"number\": 201,\r\n  \"title\": \"Something\",\r\n  \"term\": \"sp19\",\r\n  \"instructorid\": \"5cf96653b5d5ecc3557133ae\"\r\n}"
+				},
+				"url": {
+					"raw": "localhost:8000/courses/5cf967169fd9e700115e58e5",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"courses",
+						"5cf967169fd9e700115e58e5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "courses/{id}",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkB0YXJwYXVsaW4uZWR1IiwiaWQiOiI1Y2Y2ZTZkYzMwYzNiZWFhN2FkZjY2MDkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE1NTk3MDYyOTUsImV4cCI6MTU1OTc5MjY5NX0.G8O2LDYaPo-W3W81cizY0IKt-RqATxpSfGoktmmUzDY",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8000/courses/5cf71034f44cca0011b734b9",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"courses",
+						"5cf71034f44cca0011b734b9"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "courses/{id}/students",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwcm9mYkB0YXJwYXVsaW4uZWR1IiwiaWQiOiI1Y2Y5ODExNTM1ODE0YTc2NjA3Y2Y4YTIiLCJyb2xlIjoiaW5zdHJ1Y3RvciIsImlhdCI6MTU1OTg1NjEzOSwiZXhwIjoxNTU5OTQyNTM5fQ.PG6gSpUrR8ibOzI6mpE8k2bQt8M9G8-X6rugR5dRGHY"
+					}
+				],
+				"url": {
+					"raw": "localhost:8000/courses/5cf9811535814a76607cf8a6/students",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"courses",
+						"5cf9811535814a76607cf8a6",
+						"students"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "courses/{id}/students",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkB0YXJwYXVsaW4uZWR1IiwiaWQiOiI1Y2Y4OGYwZGU0OWJmZjA5ZWNkMGQ2YjAiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE1NTk3OTQxOTYsImV4cCI6MTU1OTg4MDU5Nn0.R4hrUfb03i1DFWazGewoPZTVqv9a5VdypE1wv7zM850",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"add\": [\r\n  \t\"5cf93afebe41df9629bf9a05\"\r\n  ],\r\n  \"remove\": [\r\n  ]\r\n}"
+				},
+				"url": {
+					"raw": "localhost:8000/courses/5cf9811535814a76607cf8a6/students",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"courses",
+						"5cf9811535814a76607cf8a6",
+						"students"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "courses/{id}/roster",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwcm9mYkB0YXJwYXVsaW4uZWR1IiwiaWQiOiI1Y2Y5ODExNTM1ODE0YTc2NjA3Y2Y4YTIiLCJyb2xlIjoiaW5zdHJ1Y3RvciIsImlhdCI6MTU1OTg1NjEzOSwiZXhwIjoxNTU5OTQyNTM5fQ.PG6gSpUrR8ibOzI6mpE8k2bQt8M9G8-X6rugR5dRGHY"
+					}
+				],
+				"url": {
+					"raw": "localhost:8000/courses/5cf9811535814a76607cf8a6/roster",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"courses",
+						"5cf9811535814a76607cf8a6",
+						"roster"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "courses/{id}/assignments",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdHVkZW50YUB0YXJwYXVsaW4uZWR1IiwiaWQiOiI1Y2Y2ZTZkYzMwYzNiZWFhN2FkZjY2MGMiLCJyb2xlIjoic3R1ZGVudCIsImlhdCI6MTU1OTY4NjAwNywiZXhwIjoxNTU5NzcyNDA3fQ.bSFtUGZj2NJ3_rHPwBgptl_FkRhlDaIbX033auszPcI",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "localhost:8000/courses/5cf9811535814a76607cf8a6/assignments",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"courses",
+						"5cf9811535814a76607cf8a6",
+						"assignments"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
