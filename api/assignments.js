@@ -20,7 +20,8 @@ const {
     testEnrollmentByAssignment,
     insertNewAssignment,
     updateAssignment,
-    assignmentExists
+    assignmentExists,
+    removeAssignment
   } = require('../models/assignment');
 
 const { 
@@ -74,7 +75,7 @@ function removeUploadedFile(file) {
 router.post('/', requireAuthentication, async (req, res, next) => {
     var instructorId = null;
     try{
-        instructorId = await getInstructorIdByCourse(req.body.courseId);
+        instructorId = await getInstructorIdByCourse(req.body.courseid);
     } catch (err) { next(err) }; //500
     if(req.userRole == "admin" || (req.userRole == "instructor" && req.userId == instructorId) ){
         if(validateAgainstSchema(req.body, AssignmentSchema)){
@@ -242,8 +243,8 @@ router.get('/:id/submissions', requireAuthentication, async (req, res, next) => 
     } catch (err) { next(err); } //500
     if(req.userRole == "admin" || req.userId == instructorId) {
         const submissionQuery = {};
-        submissionQuery.assignmentId = id;
-        submissionQuery.studentId = req.query.studentId || null;
+        submissionQuery.assignmentid = id;
+        submissionQuery.studentid = req.query.studentid || null;
         submissionQuery.page = req.query.page || 1;
         try{
             const resultPage = await getSubmissionPage(submissionQuery);
@@ -277,17 +278,16 @@ router.get('/:id/submissions', requireAuthentication, async (req, res, next) => 
     404: Assignment id not found
 */
 router.post('/:id/submissions', requireAuthentication, upload.single('file'), async (req, res, next) => {
-    if(req.userId == "student" && req.body.studentId && req.userId == req.body.studentId){
+    if(req.userId == "student" && req.body.studentid && req.userId == req.body.studentid){
         try {
-            const enrolled = await testEnrollmentByAssignment(req.body.assignmentId, req.body.studentId);
-            if(enrolled && req.file && req.body && req.body.assignmentId && req.body.assignmentId == req.params.id && req.body.timestamp){
+            const enrolled = await testEnrollmentByAssignment(req.body.assignmentid, req.body.studentid);
+            if(enrolled && req.file && req.body && req.body.assignmentid && req.body.assignmentid == req.params.id && req.body.timestamp){
                 const newUpload = {
                     path: req.file.path,
                     filename: req.file.filename,
                     contentType: req.file.mimetype,
-                    assignmentId: req.body.assignmentId,
-                    studentId: req.body.studentId,
-                    timestamp: req.body.timestamp,
+                    assignmentid: req.body.assignmentid,
+                    studentId: req.body.studentId
                 };
                 const id = await insertNewSubmission(newUpload);
                 removeUploadedFile(newUpload);

@@ -296,9 +296,10 @@ exports.getCoursesPage = async function (page, pageSize) {
   *  Returns the instructor ID given the course ID
   */
 exports.getInstructorIdByCourse = async (id) => {
-  const db = getDBReference;
+  const db = getDBReference();
   const collection = db.collection('courses');
-  const results = collection.find({ _id: new ObjectId(id) }).toArray();
+  console.log("getInstructorIDByCourse id:"+id);
+  const results = await collection.find({ _id: new ObjectId(id) }).toArray();
   return results[0].instructorid;
 };
 
@@ -306,9 +307,9 @@ exports.getInstructorIdByCourse = async (id) => {
  * Checks if a userId is enrolled in a course
  */
 exports.testEnrollmentByCourse = async (cid, uid) => {
-  const db = getDBReference;
+  const db = getDBReference();
   const collection = db.collection('courses');
-  const results = collection.find({ _id: new ObjectId(cid) }).toArray();
+  const results = await collection.find({ _id: new ObjectId(cid) }).toArray();
   const enrollment = results[0].students;
   return enrollment.contains(uid);
 }
@@ -319,6 +320,6 @@ exports.testEnrollmentByCourse = async (cid, uid) => {
 exports.courseExists = async(cid) => {
   const db = getDBReference();
   const collection = db.collection('courses');
-  const results = await collection.find({_id = new ObjectId(aid)}).countDocuments();
+  const results = await collection.countDocuments({_id: new ObjectId(aid)});
   return (results > 0);
 }

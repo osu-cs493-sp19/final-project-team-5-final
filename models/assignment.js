@@ -39,13 +39,11 @@ async function getAssignmentById(id, includeRelations) {
 async function getInstructorIdByAssignment(id) {
     const db = getDBReference();
     const collection = db.collection('assignments');
+    console.log("getInstructorIDByAssignment id:"+id);
     const results = await collection.find({ _id : new ObjectId(id) }).toArray();
-    if(results[0]) {
-        const instructorId = await getInstructorIdByCourse(results[0].courseid.toString());
-        return instructorId.toString();
-    } else {
-        return null;
-    }
+    const result = await getInstructorIdByCourse(results[0].courseid);
+    const instructorId = result.toString();
+    return instructorId.toString();
 } exports.getInstructorIdByAssignment = getInstructorIdByAssignment;
 
 /*
@@ -87,7 +85,7 @@ async function getSubmissionPage(query) {
     if(query.studentId) search['metadata.studentId'] = new ObjectId(query.studentId);
 
     const pageSize = 5;
-    var numSubs = await submissionCollection.find(search).countDocuments();
+    var numSubs = await submissionCollection.countDocuments(search);
     var pages = Math.max(Math.ceil (numSubs / pageSize), 1);
     var offset = (query.page - 1) * pageSize;
 
@@ -100,13 +98,13 @@ async function getSubmissionPage(query) {
       var results = [];
       allSubs.forEach(sub=> {
           results.push({
-              assignmentId: sub.metadata.assignmentId,
-              studentId: sub.metadata.studentId,
+              assignmentid: sub.metadata.assignmentid,
+              studentid: sub.metadata.studentid,
               timestamp: sub.timestamp,
               file: "/uploads/"+sub.filename
           });
       });
-    const url = "/assignments/"+query.assignmentId+"/submissions"+(query.studentId ? "?studentid="+query.studentId : "")+"?page=";
+    const url = "/assignments/"+query.assignmentid+"/submissions"+(query.studentid ? "?studentid="+query.studentid : "")+"?page=";
     return {
         submissions: results,
         results: numSubs,
@@ -125,9 +123,8 @@ function insertNewSubmission(newUpload) {
     
         const metadata = {
             contentType: newUpload.contentType,
-            assignmentId: newUpload.assignmentId,
-            studentId: newUpload.studentId,
-            timestamp: newUpload.timestamp 
+            assignmentid: newUpload.assignmentid,
+            studentid: newUpload.studentid
         };
     
         const uploadStream = bucket.openUploadStream(
@@ -157,7 +154,7 @@ exports.getDownloadStreamByFilename = function (filename) {
 exports.insertNewAssignment = async(assn) => {
     const db = getDBReference();
     const collection = db.collection('assignments');
-    const result = await collection.insertOne({ assn });
+    const result = await collection.insertOne( assn );
     return result.insertedId;
 };
 
@@ -168,25 +165,26 @@ exports.updateAssignment = async(aid, assn) => {
     return result.insertedId;
 };
 
-exports.getSubmissionsByAssignment = async(aid) => {
+ async function getSubmissionsByAssignment(aid) {
     const db = getDBReference();
     const collection = db.collection('assignments');
     const results = await collection.find({ _id: new ObjectId(aid) });
     return results[0].submissions;
-};
+} exports.getSubmissionsByAssignment = getSubmissionsByAssignment;
 
-exports.removeSubmissionById = async(sid) => {
+exports.removeSubmissionById = (sid) => {
     const db = getDBReference();
     const bucket = new GridFSBucket(db, { bucketName: 'submissions' });
-    return await bucket.delete(new ObjectId(sid));
+    return bucket.delete(new ObjectId(sid));
 };
 
 exports.removeAssignment = async(aid) => {
+    console.log("removeAssignment aid:"+aid);
     const db = getDBReference();
     const collection = db.collection('assignments');
     const submissions = await getSubmissionsByAssignment(aid);
     submissions.forEach( sid => {
-        await removeSubmissionById(sid)
+        removeSubmissionById(sid)
     });
     const result = await collection.deleteOne({_id: new ObjectId(aid)});
     return result.deletedCount;
@@ -195,6 +193,6 @@ exports.removeAssignment = async(aid) => {
 exports.assignmentExists = async(aid) => {
     const db = getDBReference();
     const collection = db.collection('assignments');
-    const results = await collection.find({_id = new ObjectId(aid)}).countDocuments();
+    const results = await collection.countDocuments({_id: new ObjectId(aid)});
     return (results > 0);
 }
