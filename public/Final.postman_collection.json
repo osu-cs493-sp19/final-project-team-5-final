@@ -841,6 +841,50 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "localhost:8000/assignments/{id}/submissions?studentid={id}&page=1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwcm9mYUB0YXJwYXVsaW4uZWR1IiwiaWQiOiI1ZDAwMGY3YWYyMjA0MjVhN2JlM2QxYzQiLCJyb2xlIjoiaW5zdHJ1Y3RvciIsImlhdCI6MTU2MDI4NTQ3NCwiZXhwIjoxNTYwMzcxODc0fQ.vnyYfNMJvCFycl3HTaly8ZgBWl5DacaaUFvcNLhRsdE",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8000/assignments/5d0022632a89460013ce4915/submissions?studentid=5d000f7af220425a7be3d1c6&page=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"assignments",
+						"5d0022632a89460013ce4915",
+						"submissions"
+					],
+					"query": [
+						{
+							"key": "studentid",
+							"value": "5d000f7af220425a7be3d1c6"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }

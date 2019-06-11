@@ -1,6 +1,5 @@
 const { ObjectId } = require('mongodb');
 const { getDBReference } = require('../lib/mongo');
-const bcrypt = require('bcryptjs');
 const { extractValidFields } = require('../lib/validation');
 const { getUserById } = require('./users');
 
@@ -185,7 +184,9 @@ exports.deleteCourseByID = async function (id) {
   //if there is not a course then we can't delete it.
   if (results.length < 1) {
        return 0;
- }
+  }
+
+  const assnArray = results[0].assignments;
 
   //remove this course from all student and instructor lists.
   await userCollection.updateMany({}, {$pull: { courses: id }});
@@ -322,4 +323,14 @@ exports.courseExists = async(cid) => {
   const collection = db.collection('courses');
   const results = await collection.countDocuments({_id: new ObjectId(aid)});
   return (results > 0);
+}
+
+/*
+ * Adds new assignment to a course
+ */
+exports.insertAssignmentToCourse = async(cid, aid) => {
+  const db = getDBReference();
+  const collection = db.collection('courses');
+  const results = await collection.updateOne({_id: new ObjectId(cid)}, {$addToSet : {assignments: new ObjectId(aid)}});
+  return results;
 }

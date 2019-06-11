@@ -1,12 +1,12 @@
 const fs = require('fs');
 const { ObjectId, GridFSBucket } = require('mongodb');
+
 const { getDBReference } = require('../lib/mongo');
-const bcrypt = require('bcryptjs');
-const { extractValidFields } = require('../lib/validation');
 
 const { 
     getInstructorIdByCourse,
-    testEnrollmentByCourse
+    testEnrollmentByCourse,
+    insertAssignmentToCourse
     } = require('./course');
 
 const AssignmentSchema = {
@@ -76,15 +76,12 @@ async function getSubmissionPage(query) {
     console.log("getSubmissionPage query: "+ JSON.stringify(query,null,2));
     const targetAssignment = await assignmentCollection.find({ _id: new ObjectId(query.assignmentid)}).toArray();
     const submissionList = targetAssignment[0].submissions;
-    console.log("submissionList: "+submissionList);
     var searchList = [];
     submissionList.forEach(submissionId => { 
         searchList.push(new ObjectId(submissionId)); 
     });
-    console.log("searchList: "+searchList);
     const search = { _id: {$in: searchList}};
-    if(query.studentid) search['metadata.studentid'] = new ObjectId(query.studentid);
-    console.log("search: "+search);
+    if(query.studentid) search['metadata.studentid'] = query.studentid;
     const pageSize = 5;
     var numSubs = await submissionCollection.countDocuments(search);
     var pages = Math.max(Math.ceil (numSubs / pageSize), 1);
@@ -105,7 +102,7 @@ async function getSubmissionPage(query) {
               file: "/uploads/"+sub.filename
           });
       });
-    const url = "/assignments/"+query.assignmentid+"/submissions"+(query.studentid ? "?studentid="+query.studentid : "")+"?page=";
+    const url = "/assignments/"+query.assignmentid+"/submissions?"+(!!query.studentid ? "studentid="+query.studentid+"&" : "")+"page=";
     return {
         submissions: results,
         results: numSubs,
@@ -158,7 +155,9 @@ exports.insertNewAssignment = async(assn) => {
     const db = getDBReference();
     const collection = db.collection('assignments');
     assn.submissions = [];
+    assn.courseid = new ObjectId(assn.courseid);
     const result = await collection.insertOne( assn );
+    await insertAssignmentToCourse(assn.courseid, result.insertedId);
     return result.insertedId;
 };
 
@@ -183,7 +182,7 @@ exports.removeSubmissionById = (sid) => {
     return bucket.delete(new ObjectId(sid));
 };
 
-exports.removeAssignment = async(aid) => {
+async function removeAssignment (aid) {
     console.log("removeAssignment aid:"+aid);
     const db = getDBReference();
     const collection = db.collection('assignments');
@@ -193,7 +192,7 @@ exports.removeAssignment = async(aid) => {
     });
     const result = await collection.deleteOne({_id: new ObjectId(aid)});
     return result.deletedCount;
-}
+} exports.removeAssignment = removeAssignment;
 
 exports.assignmentExists = async(aid) => {
     const db = getDBReference();
