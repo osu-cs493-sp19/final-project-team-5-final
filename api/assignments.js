@@ -1,10 +1,56 @@
 const router = require('express').Router();
+const multer = require('multer');
+const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 
 const { requireAuthentication } = require('../lib/auth');
 
+const { 
+    validateAgainstSchema, 
+    validateAgainstSchemaPatch,
+    extractValidFields 
+  } = require('../lib/validation')
+
 const {
-    AssignmentSchema
+    AssignmentSchema,
+    getAssignmentById,
+    getInstructorIdByAssignment,
+    getSubmissionPage,
+    testEnrollmentByAssignment,
+    insertNewAssignment,
+    updateAssignment,
+    assignmentExists
   } = require('../models/assignment');
+
+const { 
+    testEnrollmentByCourse, 
+    getInstructorIdByCourse,
+    courseExists
+  } = require('../models/course');
+
+const upload = multer({
+    storage: multer.diskStorage({
+      destination: `${__dirname}/uploads`,
+      filename: (req, file, callback) => {
+        const basename = crypto.pseudoRandomBytes(16).toString('hex');
+        const extension = path.extname(file.originalname);
+        callback(null, `${basename}.${extension}`);
+      }
+    })
+});
+
+function removeUploadedFile(file) {
+    return new Promise((resolve, reject) => {
+      fs.unlink(file.path, (err) => {
+        if(err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+}
 
 /*
     POST /assignments
@@ -25,8 +71,30 @@ const {
     400: req.body not present or did not contain a valid assignment object
     403: not authorized
 */
-router.post('/', async (req, res, next) => {
-
+router.post('/', requireAuthentication, async (req, res, next) => {
+    var instructorId = null;
+    try{
+        instructorId = await getInstructorIdByCourse(req.body.courseId);
+    } catch (err) { next(err) }; //500
+    if(req.userRole == "admin" || (req.userRole == "instructor" && req.userId == instructorId) ){
+        if(validateAgainstSchema(req.body, AssignmentSchema)){
+            const validAssn = extractValidFields(req.body, AssignmentSchema);
+            try{
+                const id = await insertNewAssignment(validAssn);
+                res.status(201).send({
+                    id: id
+                });
+            } catch (err) { next(err); } //500
+        } else {
+            res.status(400).send({
+                error: "The request body was either not present or did not contain a valid Assignment object."
+            });
+        }
+    } else {
+        res.status(403).send({
+            error: "User is not authorized to perform this action"
+        });
+    }
 });
 
 /*
@@ -47,7 +115,15 @@ router.post('/', async (req, res, next) => {
     404: assignment id not found.
 */
 router.get('/:id', async (req, res, next) => {
-
+    var exists = null;
+    var assignment = null;
+    try{
+        exists = assignmentExists(req.params.id);
+        assignment = await getAssignmentById(req.params.id, false);
+    } catch (err) { next(err); } //500
+    if(exists){
+        res.status(200).send(assignment);
+    } else { next(); } //404
 });
 
 
@@ -65,8 +141,34 @@ router.get('/:id', async (req, res, next) => {
     403: Not authenticated correctly
     404: assignment id not found
 */
-router.patch('/:id', async (req, res, next) => {
+router.patch('/:id', requireAuthentication, async (req, res, next) => {
+    var instructorId;
+    try{
+        const exists = await assignmentExists(req.params.id);
+        if(exists) {
+            instructorId = await getInstructorIdByAssignment(req.params.id);
+        } else { next(); } //404
+    } catch (err) { next(err); } //500
 
+    if(req.userRole == "admin" || (req.userRole == "instructor" && req.userId == instructorId) ){
+        if(validateAgainstSchemaPatch(req.body, AssignmentSchema)){
+            const validAssn = extractValidFields(req.body, AssignmentSchema);
+            try{
+                const id = await updateAssignment(validAssn);
+                res.status(200).send({
+                    id: id
+                });
+            } catch (err) { next(err); } //500
+        } else {
+            res.status(400).send({
+                error: "The request body was either not present or did not contain a valid Assignment object."
+            });
+        }
+    } else {
+        res.status(403).send({
+            error: "User is not authorized to perform this action"
+        });
+    }
 });
 
 /*
@@ -82,8 +184,25 @@ router.patch('/:id', async (req, res, next) => {
     404: assignment id not found
 
 */
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', requireAuthentication, async (req, res, next) => {
+    var instructorId = null;
+    try{
+        const exists = await assignmentExists(req.params.id);
+        if(exists) {
+            instructorId = await getInstructorIdByAssignment(req.params.id);
+        } else { next(); } //404
+    } catch (err) { next(err); } //500
 
+    if(req.userRole == "admin" || (req.userRole == "instructor" && req.userId == instructorId) ){
+        try{
+            const result = await removeAssignment(req.params.id);
+            res.status(204).send();
+        } catch (err) { next(err); } //500
+    } else {
+        res.status(403).send({
+            error: "User is not authorized to perform this action"
+        });
+    }
 });
 
 /*
@@ -113,8 +232,28 @@ router.delete('/:id', async (req, res, next) => {
     403: Not authenticated
     404: assignment id not found
 */
-router.get('/:id/submissions', async (req, res, next) => {
-
+router.get('/:id/submissions', requireAuthentication, async (req, res, next) => {
+    var instructorId = null;
+    try{
+        const exists = await assignmentExists(req.params.id);
+        if(exists) {
+            instructorId = await getInstructorIdByAssignment(req.params.id);
+        } else { next(); } //404
+    } catch (err) { next(err); } //500
+    if(req.userRole == "admin" || req.userId == instructorId) {
+        const submissionQuery = {};
+        submissionQuery.assignmentId = id;
+        submissionQuery.studentId = req.query.studentId || null;
+        submissionQuery.page = req.query.page || 1;
+        try{
+            const resultPage = await getSubmissionPage(submissionQuery);
+            res.status(200).send({ resultPage });
+        } catch (err) { next(err); } //500
+    } else {
+        res.status(403).send({
+            error: "User is not authenticated to access this resource"
+        });
+    }
 });
 
 
@@ -137,8 +276,37 @@ router.get('/:id/submissions', async (req, res, next) => {
     403: User not authenticated correctly
     404: Assignment id not found
 */
-router.post('/:id/submissions', async (req, res, next) => {
-
+router.post('/:id/submissions', requireAuthentication, upload.single('file'), async (req, res, next) => {
+    if(req.userId == "student" && req.body.studentId && req.userId == req.body.studentId){
+        try {
+            const enrolled = await testEnrollmentByAssignment(req.body.assignmentId, req.body.studentId);
+            if(enrolled && req.file && req.body && req.body.assignmentId && req.body.assignmentId == req.params.id && req.body.timestamp){
+                const newUpload = {
+                    path: req.file.path,
+                    filename: req.file.filename,
+                    contentType: req.file.mimetype,
+                    assignmentId: req.body.assignmentId,
+                    studentId: req.body.studentId,
+                    timestamp: req.body.timestamp,
+                };
+                const id = await insertNewSubmission(newUpload);
+                removeUploadedFile(newUpload);
+                res.status(201).send({
+                    id: id
+                });
+            } else {
+                res.status(400).send({
+                    error: "Request body is not a valid submission object"
+                });
+            }
+        } catch (err) {
+            next(err); // 500
+        }
+    } else {
+        res.status(403).send({
+            error: "User is not authorized to create a submission here."
+        });
+    }
 });
 
 module.exports = router;

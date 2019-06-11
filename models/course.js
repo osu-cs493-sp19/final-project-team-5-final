@@ -291,3 +291,34 @@ exports.getCoursesPage = async function (page, pageSize) {
 
     return csv;
  }
+
+ /*
+  *  Returns the instructor ID given the course ID
+  */
+exports.getInstructorIdByCourse = async (id) => {
+  const db = getDBReference;
+  const collection = db.collection('courses');
+  const results = collection.find({ _id: new ObjectId(id) }).toArray();
+  return results[0].instructorid;
+};
+
+/*
+ * Checks if a userId is enrolled in a course
+ */
+exports.testEnrollmentByCourse = async (cid, uid) => {
+  const db = getDBReference;
+  const collection = db.collection('courses');
+  const results = collection.find({ _id: new ObjectId(cid) }).toArray();
+  const enrollment = results[0].students;
+  return enrollment.contains(uid);
+}
+
+/*
+ * Checks is a course exists
+ */
+exports.courseExists = async(cid) => {
+  const db = getDBReference();
+  const collection = db.collection('courses');
+  const results = await collection.find({_id = new ObjectId(aid)}).countDocuments();
+  return (results > 0);
+}
