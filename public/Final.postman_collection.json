@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "7c27c433-1277-4db7-be5b-0de7ad0bf3fe",
+		"_postman_id": "abe27105-d157-4643-acb0-f6bdbdee3569",
 		"name": "Final",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -86,6 +86,10 @@
 						"type": "text"
 					}
 				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"url": {
 					"raw": "localhost:8000/users/5cf9811535814a76607cf8a2",
 					"host": [
@@ -118,6 +122,10 @@
 						"disabled": true
 					}
 				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"url": {
 					"raw": "localhost:8000/courses",
 					"host": [
@@ -183,6 +191,10 @@
 						"disabled": true
 					}
 				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"url": {
 					"raw": "localhost:8000/courses/5cf9811535814a76607cf8a6",
 					"host": [
@@ -249,6 +261,10 @@
 						"type": "text"
 					}
 				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"url": {
 					"raw": "localhost:8000/courses/5cf71034f44cca0011b734b9",
 					"host": [
@@ -280,6 +296,10 @@
 						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwcm9mYkB0YXJwYXVsaW4uZWR1IiwiaWQiOiI1Y2Y5ODExNTM1ODE0YTc2NjA3Y2Y4YTIiLCJyb2xlIjoiaW5zdHJ1Y3RvciIsImlhdCI6MTU1OTg1NjEzOSwiZXhwIjoxNTU5OTQyNTM5fQ.PG6gSpUrR8ibOzI6mpE8k2bQt8M9G8-X6rugR5dRGHY"
 					}
 				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"url": {
 					"raw": "localhost:8000/courses/5cf9811535814a76607cf8a6/students",
 					"host": [
@@ -348,6 +368,10 @@
 						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwcm9mYkB0YXJwYXVsaW4uZWR1IiwiaWQiOiI1Y2Y5ODExNTM1ODE0YTc2NjA3Y2Y4YTIiLCJyb2xlIjoiaW5zdHJ1Y3RvciIsImlhdCI6MTU1OTg1NjEzOSwiZXhwIjoxNTU5OTQyNTM5fQ.PG6gSpUrR8ibOzI6mpE8k2bQt8M9G8-X6rugR5dRGHY"
 					}
 				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"url": {
 					"raw": "localhost:8000/courses/5cf9811535814a76607cf8a6/roster",
 					"host": [
@@ -381,6 +405,10 @@
 						"disabled": true
 					}
 				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"url": {
 					"raw": "localhost:8000/courses/5cf9811535814a76607cf8a6/assignments",
 					"host": [
@@ -391,6 +419,424 @@
 						"courses",
 						"5cf9811535814a76607cf8a6",
 						"assignments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "users/login studenta",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"studenta@tarpaulin.edu\",\n\t\"password\": \"hunter2\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8000/users/login",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "users/login studentb",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"studentb@tarpaulin.edu\",\n\t\"password\": \"hunter2\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8000/users/login",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "users/login profa",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"profa@tarpaulin.edu\",\n\t\"password\": \"hunter2\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8000/users/login",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "users/login profb",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"profb@tarpaulin.edu\",\n\t\"password\": \"hunter2\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8000/users/login",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "users/login admin",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"admin@tarpaulin.edu\",\n\t\"password\": \"hunter2\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8000/users/login",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "assignments",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwcm9mYUB0YXJwYXVsaW4uZWR1IiwiaWQiOiI1Y2ZmM2M0NTA0OGI1ZDNmNjg0YzljNDAiLCJyb2xlIjoiaW5zdHJ1Y3RvciIsImlhdCI6MTU2MDIzNjgzNCwiZXhwIjoxNTYwMzIzMjM0fQ.Kd1aqpQbpgiw7_i9CjDH2G4rv97z6x8ByfdKXUVm9ck",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"courseid\": \"5cff3c45048b5d3f684c9c44\",\n    \"title\": \"Assignment 3\",\n    \"points\": 300,\n    \"due\": \"2019-06-13T05:29:41.324Z\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8000/assignments/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"assignments",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "assignments/{id}",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8000/assignments/5cff6dcd49e9240013365214",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"assignments",
+						"5cff6dcd49e9240013365214"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "assignments/{id}",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwcm9mYUB0YXJwYXVsaW4uZWR1IiwiaWQiOiI1Y2ZmM2M0NTA0OGI1ZDNmNjg0YzljNDAiLCJyb2xlIjoiaW5zdHJ1Y3RvciIsImlhdCI6MTU2MDIzNjgzNCwiZXhwIjoxNTYwMzIzMjM0fQ.Kd1aqpQbpgiw7_i9CjDH2G4rv97z6x8ByfdKXUVm9ck",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"courseid\": \"5cff3c45048b5d3f684c9c44\",\n    \"title\": \"Assignment 3\",\n    \"points\": 300,\n    \"due\": \"2019-06-13T05:29:41.324Z\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8000/assignments/5cff58f2c88a3a001253af1d",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"assignments",
+						"5cff58f2c88a3a001253af1d"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "assignments/{id}",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkB0YXJwYXVsaW4uZWR1IiwiaWQiOiI1Y2ZmM2M0NTA0OGI1ZDNmNjg0YzljM2YiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE1NjAyMzg0MDcsImV4cCI6MTU2MDMyNDgwN30.OPTRKW3BrQdSemz1qS1RQffUwsDuqXacrc94-NQBXac",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8000/assignments/5cff58f2c88a3a001253af1d",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"assignments",
+						"5cff58f2c88a3a001253af1d"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "assignments/{id}/submissions",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwcm9mYUB0YXJwYXVsaW4uZWR1IiwiaWQiOiI1Y2ZmM2M0NTA0OGI1ZDNmNjg0YzljNDAiLCJyb2xlIjoiaW5zdHJ1Y3RvciIsImlhdCI6MTU2MDI4Mzc3NiwiZXhwIjoxNTYwMzcwMTc2fQ.RpoDP6-7faBiYZIWzF2doc6pqtDJJFPKeZTw-5luB60",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8000/assignments/5cff3c45048b5d3f684c9c46/submissions",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"assignments",
+						"5cff3c45048b5d3f684c9c46",
+						"submissions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "assignments/{id}/submissions",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdHVkZW50YUB0YXJwYXVsaW4uZWR1IiwiaWQiOiI1Y2ZmM2M0NTA0OGI1ZDNmNjg0YzljNDIiLCJyb2xlIjoic3R1ZGVudCIsImlhdCI6MTU2MDI0Mzc5MSwiZXhwIjoxNTYwMzMwMTkxfQ.ZvR-RBKxahLfbfOPXsZ_WiWkcG-N1YfUzyxUIpDUock",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "assignmentid",
+							"value": "5cff3c45048b5d3f684c9c46",
+							"type": "text"
+						},
+						{
+							"key": "studentid",
+							"value": "5cff3c45048b5d3f684c9c42",
+							"type": "text"
+						},
+						{
+							"key": "file",
+							"type": "file",
+							"src": ""
+						},
+						{
+							"key": "timestamp",
+							"value": "2019-06-11T05:29:41.324Z",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8000/assignments/5cff3c45048b5d3f684c9c46/submissions",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"assignments",
+						"5cff3c45048b5d3f684c9c46",
+						"submissions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8000/uploads/{filename}",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8000/uploads/5d0008a8545b590013039f11",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"uploads",
+						"5d0008a8545b590013039f11"
 					]
 				}
 			},

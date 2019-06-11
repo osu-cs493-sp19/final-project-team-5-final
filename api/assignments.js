@@ -21,7 +21,8 @@ const {
     insertNewAssignment,
     updateAssignment,
     assignmentExists,
-    removeAssignment
+    removeAssignment,
+    insertNewSubmission
   } = require('../models/assignment');
 
 const { 
@@ -36,7 +37,7 @@ const upload = multer({
       filename: (req, file, callback) => {
         const basename = crypto.pseudoRandomBytes(16).toString('hex');
         const extension = path.extname(file.originalname);
-        callback(null, `${basename}.${extension}`);
+        callback(null, `${basename}${extension}`);
       }
     })
 });
@@ -155,7 +156,7 @@ router.patch('/:id', requireAuthentication, async (req, res, next) => {
         if(validateAgainstSchemaPatch(req.body, AssignmentSchema)){
             const validAssn = extractValidFields(req.body, AssignmentSchema);
             try{
-                const id = await updateAssignment(validAssn);
+                const id = await updateAssignment(validAssn, req.params.id);
                 res.status(200).send({
                     id: id
                 });
@@ -243,7 +244,7 @@ router.get('/:id/submissions', requireAuthentication, async (req, res, next) => 
     } catch (err) { next(err); } //500
     if(req.userRole == "admin" || req.userId == instructorId) {
         const submissionQuery = {};
-        submissionQuery.assignmentid = id;
+        submissionQuery.assignmentid = req.params.id;
         submissionQuery.studentid = req.query.studentid || null;
         submissionQuery.page = req.query.page || 1;
         try{
@@ -278,16 +279,17 @@ router.get('/:id/submissions', requireAuthentication, async (req, res, next) => 
     404: Assignment id not found
 */
 router.post('/:id/submissions', requireAuthentication, upload.single('file'), async (req, res, next) => {
-    if(req.userId == "student" && req.body.studentid && req.userId == req.body.studentid){
+    if(req.userRole == "student" && req.body.studentid && req.userId == req.body.studentid){
         try {
             const enrolled = await testEnrollmentByAssignment(req.body.assignmentid, req.body.studentid);
-            if(enrolled && req.file && req.body && req.body.assignmentid && req.body.assignmentid == req.params.id && req.body.timestamp){
+            console.log("enrolled: "+enrolled+"\n req.file: "+JSON.stringify(req.file)+"\n req.body: "+JSON.stringify(req.body), +"\n req.params:"+JSON.stringify(req.params));
+            if(enrolled && req.file && req.body && req.body.assignmentid && req.body.assignmentid == req.params.id){
                 const newUpload = {
                     path: req.file.path,
                     filename: req.file.filename,
                     contentType: req.file.mimetype,
                     assignmentid: req.body.assignmentid,
-                    studentId: req.body.studentId
+                    studentid: req.body.studentid
                 };
                 const id = await insertNewSubmission(newUpload);
                 removeUploadedFile(newUpload);

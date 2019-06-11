@@ -311,7 +311,7 @@ exports.testEnrollmentByCourse = async (cid, uid) => {
   const collection = db.collection('courses');
   const results = await collection.find({ _id: new ObjectId(cid) }).toArray();
   const enrollment = results[0].students;
-  return enrollment.contains(uid);
+  return enrollment.includes(uid);
 }
 
 /*

@@ -57,7 +57,7 @@ async function testEnrollmentByAssignment(aid, uid) {
     const results = await collection.find({ _id: new ObjectId(aid) }).toArray();
     if(results[0]) {
         const courseId = results[0].courseid.toString();
-        return await testEnrollmentByCourse(courseid, uid);
+        return await testEnrollmentByCourse(courseId, uid);
     } else {
         return false;
     }
@@ -73,17 +73,18 @@ async function getSubmissionPage(query) {
     const db = getDBReference();
     const assignmentCollection = db.collection('assignments');
     const submissionCollection = db.collection('submissions.files');
-    const targetAssignment = assignmentCollection.find({ _id: new ObjectId(query.assignmentId)}).toArray();
-    const submissionList = targetAssignment[0].metadata.submissions;
-
+    console.log("getSubmissionPage query: "+ JSON.stringify(query,null,2));
+    const targetAssignment = await assignmentCollection.find({ _id: new ObjectId(query.assignmentid)}).toArray();
+    const submissionList = targetAssignment[0].submissions;
+    console.log("submissionList: "+submissionList);
     var searchList = [];
     submissionList.forEach(submissionId => { 
         searchList.push(new ObjectId(submissionId)); 
     });
-
+    console.log("searchList: "+searchList);
     const search = { _id: {$in: searchList}};
-    if(query.studentId) search['metadata.studentId'] = new ObjectId(query.studentId);
-
+    if(query.studentid) search['metadata.studentid'] = new ObjectId(query.studentid);
+    console.log("search: "+search);
     const pageSize = 5;
     var numSubs = await submissionCollection.countDocuments(search);
     var pages = Math.max(Math.ceil (numSubs / pageSize), 1);
@@ -111,7 +112,7 @@ async function getSubmissionPage(query) {
         page: query.page,
         totalpages: pages,
         first: url+"1",
-        next: url+Math.min(page+1,pages).toString(),
+        next: url+Math.min(query.page+1,pages).toString(),
         last: url+pages.toString()
     };
 } exports.getSubmissionPage = getSubmissionPage;
@@ -120,6 +121,7 @@ function insertNewSubmission(newUpload) {
     return new Promise((resolve, reject) => {
         const db = getDBReference();
         const bucket = new GridFSBucket(db, { bucketName: 'submissions' });
+        const assignmentCollection = db.collection('assignments');
     
         const metadata = {
             contentType: newUpload.contentType,
@@ -139,7 +141,8 @@ function insertNewSubmission(newUpload) {
           .on('error', (err) => {
               reject(err);
           })
-          .on('finish', (result) => {
+          .on('finish', async (result) => {
+              await assignmentCollection.updateOne({_id: new ObjectId(newUpload.assignmentid)}, {$addToSet : {submissions: result._id}});
               resolve(result._id);
           });
     });
@@ -154,13 +157,15 @@ exports.getDownloadStreamByFilename = function (filename) {
 exports.insertNewAssignment = async(assn) => {
     const db = getDBReference();
     const collection = db.collection('assignments');
+    assn.submissions = [];
     const result = await collection.insertOne( assn );
     return result.insertedId;
 };
 
-exports.updateAssignment = async(aid, assn) => {
+exports.updateAssignment = async(assn, aid) => {
     const db = getDBReference();
     const collection = db.collection('assignments');
+    console.log("updateAssignment aid:"+aid);
     const result = await collection.updateOne({_id: new ObjectId(aid)}, { $set: assn });
     return result.insertedId;
 };
@@ -168,7 +173,7 @@ exports.updateAssignment = async(aid, assn) => {
  async function getSubmissionsByAssignment(aid) {
     const db = getDBReference();
     const collection = db.collection('assignments');
-    const results = await collection.find({ _id: new ObjectId(aid) });
+    const results = await collection.find({ _id: new ObjectId(aid) }).toArray();
     return results[0].submissions;
 } exports.getSubmissionsByAssignment = getSubmissionsByAssignment;
 
