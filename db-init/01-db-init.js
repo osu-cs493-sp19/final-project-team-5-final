@@ -68,13 +68,15 @@ db.assignments.insertMany([
     "courseid": cidA,
     "title": "Assignment 2",
     "points": 200,
-    "due": new Date().toISOString()
+    "due": new Date().toISOString(),
+    "submissions": []
   },
   {
     "courseid": cidB,
     "title": "Final Essay",
     "points": 350,
-    "due": new Date().toISOString()
+    "due": new Date().toISOString(),
+    "submissions": []
   }
 ]);
 

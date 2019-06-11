@@ -1,6 +1,5 @@
 const { ObjectId } = require('mongodb');
 const { getDBReference } = require('../lib/mongo');
-const bcrypt = require('bcryptjs');
 const { extractValidFields } = require('../lib/validation');
 const { getUserById } = require('./users');
 
@@ -185,7 +184,9 @@ exports.deleteCourseByID = async function (id) {
   //if there is not a course then we can't delete it.
   if (results.length < 1) {
        return 0;
- }
+  }
+
+  const assnArray = results[0].assignments;
 
   //remove this course from all student and instructor lists.
   await userCollection.updateMany({}, {$pull: { courses: id }});
@@ -291,3 +292,45 @@ exports.getCoursesPage = async function (page, pageSize) {
 
     return csv;
  }
+
+ /*
+  *  Returns the instructor ID given the course ID
+  */
+exports.getInstructorIdByCourse = async (id) => {
+  const db = getDBReference();
+  const collection = db.collection('courses');
+  console.log("getInstructorIDByCourse id:"+id);
+  const results = await collection.find({ _id: new ObjectId(id) }).toArray();
+  return results[0].instructorid;
+};
+
+/*
+ * Checks if a userId is enrolled in a course
+ */
+exports.testEnrollmentByCourse = async (cid, uid) => {
+  const db = getDBReference();
+  const collection = db.collection('courses');
+  const results = await collection.find({ _id: new ObjectId(cid) }).toArray();
+  const enrollment = results[0].students;
+  return enrollment.includes(uid);
+}
+
+/*
+ * Checks is a course exists
+ */
+exports.courseExists = async(cid) => {
+  const db = getDBReference();
+  const collection = db.collection('courses');
+  const results = await collection.countDocuments({_id: new ObjectId(aid)});
+  return (results > 0);
+}
+
+/*
+ * Adds new assignment to a course
+ */
+exports.insertAssignmentToCourse = async(cid, aid) => {
+  const db = getDBReference();
+  const collection = db.collection('courses');
+  const results = await collection.updateOne({_id: new ObjectId(cid)}, {$addToSet : {assignments: new ObjectId(aid)}});
+  return results;
+}
