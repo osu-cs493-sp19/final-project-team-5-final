@@ -38,6 +38,8 @@ db.users.insertMany([
 
 const uidA = db.users.findOne({name:"Instructor A"})._id;
 const uidB = db.users.findOne({name:"Instructor B"})._id;
+const usidA = db.users.findOne({name:"Student A"})._id;
+const usidB = db.users.findOne({name:"Student B"})._id;
 
 db.courses.insertMany([
   {
@@ -85,6 +87,12 @@ const aidB = db.assignments.findOne({title: "Final Essay"})._id;
 
 db.users.updateOne({name:"Instructor A"}, {$set: { courses: [cidA] }});
 db.users.updateOne({name:"Instructor B"}, {$set: { courses: [cidB] }});
+
+db.users.updateOne({name:"Student A"}, {$set: { courses: [cidA] }});
+db.users.updateOne({name:"Student B"}, {$set: { courses: [cidB] }});
+
+db.courses.updateOne({subject:"CS", number:"493"}, {$set: { students: [usidA] }});
+db.courses.updateOne({subject:"WR", number:"327"}, {$set: { students: [usidB] }});
 
 db.courses.updateOne({subject:"CS", number:"493"}, {$set: { assignments: [aidA] }});
 db.courses.updateOne({subject:"WR", number:"327"}, {$set: { assignments: [aidB] }});
