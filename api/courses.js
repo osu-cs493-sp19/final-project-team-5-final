@@ -77,47 +77,47 @@ router.get('/', async (req, res, next) => {
 */
 router.post('/', tagRole, async (req, res, next) => {
 
-//only admins can post new courses.
-if (req.userRole == "admin") {
+    //only admins can post new courses.
+    if (req.userRole == "admin") {
 
-        //confirm that the request body contains a valid course.
-        if (validateAgainstSchema(req.body, CourseSchema)) {
+            //confirm that the request body contains a valid course.
+            if (validateAgainstSchema(req.body, CourseSchema)) {
 
-            try {
+                try {
 
-                //adds the new course and then returns the id.
-                const id = await insertNewCourse(req.body);
+                    //adds the new course and then returns the id.
+                    const id = await insertNewCourse(req.body);
 
-                //if the selected user was an instructor
-                //then reutrn the id of the course.
-                if (id) {
-                    res.status(201).send({
-                        _id: id
-                    });
-                } else {
-                    res.status(400).send({
-                        error: "The request body did not contain a valid instructor."
+                    //if the selected user was an instructor
+                    //then reutrn the id of the course.
+                    if (id) {
+                        res.status(201).send({
+                            _id: id
+                        });
+                    } else {
+                        res.status(400).send({
+                            error: "The request body did not contain a valid instructor."
+                        });
+                    }
+
+                } catch (err) {
+                    console.error(err);
+                    res.status(500).send({
+                        error: "Error inserting new course. Try again later."
                     });
                 }
 
-            } catch (err) {
-                console.error(err);
-                res.status(500).send({
-                    error: "Error inserting new course. Try again later."
-                });
-            }
+                } else {
+                    res.status(400).send({
+                        error: "The request body was either not present or did not contain a valid Course object."
+                    });
+                }
 
-            } else {
-                res.status(400).send({
-                    error: "The request body was either not present or did not contain a valid Course object."
-                });
-            }
-
-} else {
-    res.status(403).send({
-        error: "The request was not made by an authenticated User satisfying the authorization criteria."
-    });
-}
+    } else {
+        res.status(403).send({
+            error: "The request was not made by an authenticated User satisfying the authorization criteria."
+        });
+    }
 
 });
 
