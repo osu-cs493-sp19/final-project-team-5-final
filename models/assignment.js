@@ -16,6 +16,7 @@ const AssignmentSchema = {
     points: { required: true },
     due: { require: true }
 };
+
 exports.AssignmentSchema = AssignmentSchema;
 
 /*
@@ -55,8 +56,9 @@ async function getInstructorIdByAssignment(id) {
 async function testEnrollmentByAssignment(aid, uid) {
     const db = getDBReference();
     const collection = db.collection('assignments');
+    console.log("testEnrollmentByAssignment\nAID: "+ aid + "\nUID:" + uid);
     const results = await collection.find({ _id: new ObjectId(aid) }).toArray();
-    if(results[0]) {
+    if(results.length > 0) {
         const courseId = results[0].courseid.toString();
         return await testEnrollmentByCourse(courseId, uid);
     } else {

@@ -287,17 +287,29 @@ router.get('/:id/submissions', requireAuthentication, async (req, res, next) => 
     404: Assignment id not found
 */
 router.post('/:id/submissions', requireAuthentication, upload.single('file'), async (req, res, next) => {
-    if(req.userRole == "student" && req.body.studentid && req.userId == req.body.studentid){
+    const role = req.userRole;
+    const uid = req.userId;
+    const aid = req.params.id;
+    console.log("Role: "+role+"\nUID: "+uid+"\nAID: "+aid);
+    var enrolled = false;
+    
+    var exists = null;
+    try{
+        exists = await assignmentExists(req.params.id);
+    } catch (err) { next(err); } //500
+    if(!exists) next(); //404
+
+    if(req.userRole == "student"){
         try {
-            const enrolled = await testEnrollmentByAssignment(req.body.assignmentid, req.body.studentid);
-            console.log("enrolled: "+enrolled+"\n req.file: "+JSON.stringify(req.file)+"\n req.body: "+JSON.stringify(req.body), +"\n req.params:"+JSON.stringify(req.params));
-            if(enrolled && req.file && req.body && req.body.assignmentid && req.body.assignmentid == req.params.id){
+            enrolled = await testEnrollmentByAssignment(aid, uid);
+            console.log("enrolled: "+enrolled);
+            if(enrolled && req.file){
                 const newUpload = {
                     path: req.file.path,
                     filename: req.file.filename,
                     contentType: req.file.mimetype,
-                    assignmentid: req.body.assignmentid,
-                    studentid: req.body.studentid
+                    assignmentid: aid,
+                    studentid: uid
                 };
                 const id = await insertNewSubmission(newUpload);
                 removeUploadedFile(newUpload);

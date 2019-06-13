@@ -308,9 +308,11 @@ exports.getInstructorIdByCourse = async (id) => {
 exports.testEnrollmentByCourse = async (cid, uid) => {
     const db = getDBReference();
     const collection = db.collection('courses');
-    const results = await collection.find({ _id: new ObjectId(cid) }).toArray();
-    const enrollment = results[0].students;
-    return enrollment.includes(uid);
+    console.log("testEnrollmentByCourse\nCID: "+ cid + "\nUID:" + uid);
+    const results = await collection.find({ _id: new ObjectId(cid), students: new ObjectId(uid) }).toArray();
+    if(results.length > 0) {
+      return true;
+    } else return false;
 }
 
 /*
