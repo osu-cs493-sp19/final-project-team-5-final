@@ -120,7 +120,7 @@ router.get('/:id', async (req, res, next) => {
     var exists = null;
     var assignment = null;
     try{
-        exists = assignmentExists(req.params.id);
+        exists = await assignmentExists(req.params.id);
         assignment = await getAssignmentById(req.params.id, false);
     } catch (err) { next(err); } //500
     if(exists){
