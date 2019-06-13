@@ -6,7 +6,8 @@ const { getDBReference } = require('../lib/mongo');
 const { 
     getInstructorIdByCourse,
     testEnrollmentByCourse,
-    insertAssignmentToCourse
+    insertAssignmentToCourse,
+    removeAssignmentFromCourse
     } = require('./course');
 
 const AssignmentSchema = {
@@ -15,6 +16,7 @@ const AssignmentSchema = {
     points: { required: true },
     due: { require: true }
 };
+
 exports.AssignmentSchema = AssignmentSchema;
 
 /*
@@ -54,8 +56,9 @@ async function getInstructorIdByAssignment(id) {
 async function testEnrollmentByAssignment(aid, uid) {
     const db = getDBReference();
     const collection = db.collection('assignments');
+    console.log("testEnrollmentByAssignment\nAID: "+ aid + "\nUID:" + uid);
     const results = await collection.find({ _id: new ObjectId(aid) }).toArray();
-    if(results[0]) {
+    if(results.length > 0) {
         const courseId = results[0].courseid.toString();
         return await testEnrollmentByCourse(courseId, uid);
     } else {
@@ -186,10 +189,13 @@ async function removeAssignment (aid) {
     console.log("removeAssignment aid:"+aid);
     const db = getDBReference();
     const collection = db.collection('assignments');
+    const assignment = await getAssignmentById(aid)
+    const courseid = assignment.courseid.toString();
     const submissions = await getSubmissionsByAssignment(aid);
     submissions.forEach( sid => {
         removeSubmissionById(sid)
     });
+    const remidfromcourse = await removeAssignmentFromCourse(courseid, aid);
     const result = await collection.deleteOne({_id: new ObjectId(aid)});
     return result.deletedCount;
 } exports.removeAssignment = removeAssignment;

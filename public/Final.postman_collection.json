@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "9540e9b7-3014-43f0-ae32-535bc1a45ead",
+		"_postman_id": "bb988a47-8b5d-4cc4-b8b8-8920499abb96",
 		"name": "Final",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -623,61 +623,37 @@
 		{
 			"name": "assignments/{id}/submissions",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdHVkZW50YUB0YXJwYXVsaW4uZWR1IiwiaWQiOiI1ZDAxZDY0MjRhNjA0NjBiY2UyMDY1ZTUiLCJyb2xlIjoic3R1ZGVudCIsImlhdCI6MTU2MDQwNjM2MywiZXhwIjoxNTYwNDkyNzYzfQ.6iF2Sw0x-t3sXqHdXZIPMFkpHXCAjbCgPwEIXSDq-aU",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
-				"header": [
-					{
-						"key": "",
-						"value": "",
-						"type": "text",
-						"disabled": true
-					},
-					{
-						"key": "",
-						"value": "",
-						"type": "text",
-						"disabled": true
-					},
-					{
-						"key": "",
-						"value": "",
-						"type": "text",
-						"disabled": true
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "formdata",
 					"formdata": [
 						{
-							"key": "assignmentid",
-							"value": "5d018968bb137ebc95129e95",
-							"type": "text"
-						},
-						{
-							"key": "studentid",
-							"value": "5d018967bb137ebc95129e91",
-							"type": "text"
-						},
-						{
 							"key": "file",
 							"type": "file",
-							"src": "/C:/Users/snipe/Downloads/sub.txt"
-						},
-						{
-							"key": "timestamp",
-							"value": "2019-06-11T05:29:41.324Z",
-							"type": "text"
+							"src": ""
 						}
 					]
 				},
 				"url": {
-					"raw": "localhost:8000/assignments/5d018968bb137ebc95129e95/submissions",
+					"raw": "localhost:8000/assignments/5d01e90c41114d0014e7072e/submissions",
 					"host": [
 						"localhost"
 					],
 					"port": "8000",
 					"path": [
 						"assignments",
-						"5d018968bb137ebc95129e95",
+						"5d01e90c41114d0014e7072e",
 						"submissions"
 					]
 				}
@@ -698,6 +674,74 @@
 					"path": [
 						"uploads",
 						"5d0008a8545b590013039f11"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "assignments/{id}/submissions",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwcm9mYUB0YXJwYXVsaW4uZWR1IiwiaWQiOiI1ZDAxZDY0MjRhNjA0NjBiY2UyMDY1ZTMiLCJyb2xlIjoiaW5zdHJ1Y3RvciIsImlhdCI6MTU2MDQwMjM0MiwiZXhwIjoxNTYwNDg4NzQyfQ.PxINgnJRXVIoWZK4Zh3eNBISWt4n3gcbhGlz8OUQpvg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8000/assignments/5d01e90c41114d0014e7072e/submissions",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"assignments",
+						"5d01e90c41114d0014e7072e",
+						"submissions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8000/assignments/{id}/submissions?studentid={id}&page=1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwcm9mYUB0YXJwYXVsaW4uZWR1IiwiaWQiOiI1ZDAxZDY0MjRhNjA0NjBiY2UyMDY1ZTMiLCJyb2xlIjoiaW5zdHJ1Y3RvciIsImlhdCI6MTU2MDQwMjM0MiwiZXhwIjoxNTYwNDg4NzQyfQ.PxINgnJRXVIoWZK4Zh3eNBISWt4n3gcbhGlz8OUQpvg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8000/assignments/5d01e90c41114d0014e7072e/submissions",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"assignments",
+						"5d01e90c41114d0014e7072e",
+						"submissions"
 					]
 				}
 			},

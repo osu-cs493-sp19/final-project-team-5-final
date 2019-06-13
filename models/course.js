@@ -310,9 +310,11 @@ exports.getInstructorIdByCourse = async (id) => {
 exports.testEnrollmentByCourse = async (cid, uid) => {
     const db = getDBReference();
     const collection = db.collection('courses');
-    const results = await collection.find({ _id: new ObjectId(cid) }).toArray();
-    const enrollment = results[0].students;
-    return enrollment.includes(uid);
+    console.log("testEnrollmentByCourse\nCID: "+ cid + "\nUID:" + uid);
+    const results = await collection.find({ _id: new ObjectId(cid), students: new ObjectId(uid) }).toArray();
+    if(results.length > 0) {
+      return true;
+    } else return false;
 }
 
 /*
@@ -321,7 +323,7 @@ exports.testEnrollmentByCourse = async (cid, uid) => {
 exports.courseExists = async(cid) => {
     const db = getDBReference();
     const collection = db.collection('courses');
-    const results = await collection.countDocuments({_id: new ObjectId(aid)});
+    const results = await collection.countDocuments({_id: new ObjectId(cid)});
     return (results > 0);
 }
 
@@ -333,4 +335,14 @@ exports.insertAssignmentToCourse = async(cid, aid) => {
     const collection = db.collection('courses');
     const results = await collection.updateOne({_id: new ObjectId(cid)}, {$addToSet : {assignments: new ObjectId(aid)}});
     return results;
+}
+
+/*
+ * Removes an assignment from a course
+ */
+exports.removeAssignmentFromCourse = async(cid, aid) => {
+  const db = getDBReference();
+  const collection = db.collection('courses');
+  const results = await collection.updateOne({_id: new ObjectId(cid)}, {$pull : {assignments: new ObjectId(aid)}});
+  return results;
 }
