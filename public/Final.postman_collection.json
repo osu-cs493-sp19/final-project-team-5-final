@@ -716,6 +716,40 @@
 		{
 			"name": "localhost:8000/assignments/{id}/submissions?studentid={id}&page=1",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwcm9mYUB0YXJwYXVsaW4uZWR1IiwiaWQiOiI1ZDAxZDY0MjRhNjA0NjBiY2UyMDY1ZTMiLCJyb2xlIjoiaW5zdHJ1Y3RvciIsImlhdCI6MTU2MDQwMjM0MiwiZXhwIjoxNTYwNDg4NzQyfQ.PxINgnJRXVIoWZK4Zh3eNBISWt4n3gcbhGlz8OUQpvg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8000/assignments/5d01e90c41114d0014e7072e/submissions",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"assignments",
+						"5d01e90c41114d0014e7072e",
+						"submissions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8000/assignments/{id}/submissions?studentid={id}&page=1",
+			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
