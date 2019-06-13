@@ -319,7 +319,7 @@ exports.testEnrollmentByCourse = async (cid, uid) => {
 exports.courseExists = async(cid) => {
     const db = getDBReference();
     const collection = db.collection('courses');
-    const results = await collection.countDocuments({_id: new ObjectId(aid)});
+    const results = await collection.countDocuments({_id: new ObjectId(cid)});
     return (results > 0);
 }
 
