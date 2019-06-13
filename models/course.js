@@ -184,7 +184,6 @@ exports.deleteCourseByID = async function (id) {
         return 0;
     }
 
-    const assnArray = results[0].assignments;
     const courseid = id.toString();
     console.log("== course ID: ", courseid);
 

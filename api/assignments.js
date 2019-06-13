@@ -25,8 +25,7 @@ const {
     insertNewSubmission
   } = require('../models/assignment');
 
-const { 
-    testEnrollmentByCourse, 
+const {
     getInstructorIdByCourse,
     courseExists
   } = require('../models/course');
@@ -62,7 +61,7 @@ function removeUploadedFile(file) {
 
     REQ:
     {
-        "courseID": "123",
+        "courseid": "123",
         "title": "Assignment 3",
         "points": 100,
         "due": "2019-06-14T17:00:00-07:00"
@@ -94,7 +93,6 @@ router.post('/', requireAuthentication, async (req, res, next) => {
             res.status(201).send({
                 id: id
             });             
-           
         } else {
             res.status(400).send({
                 error: "The request body was either not present or did not contain a valid Assignment object."
@@ -196,12 +194,16 @@ router.patch('/:id', requireAuthentication, async (req, res, next) => {
 */
 router.delete('/:id', requireAuthentication, async (req, res, next) => {
     var instructorId = null;
+    var exists = false;
     try{
-        const exists = await assignmentExists(req.params.id);
-        if(exists) {
-            instructorId = await getInstructorIdByAssignment(req.params.id);
-        } else { next(); } //404
+        exists = await assignmentExists(req.params.id);
     } catch (err) { next(err); } //500
+
+    if(exists) {
+        try{
+            instructorId = await getInstructorIdByAssignment(req.params.id);
+        } catch (err) { next(err); } //500
+    } else { next(); } //404
 
     if(req.userRole == "admin" || (req.userRole == "instructor" && req.userId == instructorId) ){
         try{
@@ -290,16 +292,14 @@ router.post('/:id/submissions', requireAuthentication, upload.single('file'), as
     const role = req.userRole;
     const uid = req.userId;
     const aid = req.params.id;
-    console.log("Role: "+role+"\nUID: "+uid+"\nAID: "+aid);
     var enrolled = false;
-    
     var exists = null;
     try{
         exists = await assignmentExists(req.params.id);
     } catch (err) { next(err); } //500
     if(!exists) next(); //404
 
-    if(req.userRole == "student"){
+    if(role == "student"){
         try {
             enrolled = await testEnrollmentByAssignment(aid, uid);
             console.log("enrolled: "+enrolled);
