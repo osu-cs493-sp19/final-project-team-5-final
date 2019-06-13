@@ -75,18 +75,26 @@ function removeUploadedFile(file) {
 */
 router.post('/', requireAuthentication, async (req, res, next) => {
     var instructorId = null;
+    var courseCheck = null;
     try{
-        instructorId = await getInstructorIdByCourse(req.body.courseid);
+        courseCheck = await courseExists(req.body.courseid);
+        if(courseCheck) instructorId = await getInstructorIdByCourse(req.body.courseid); 
     } catch (err) { next(err) }; //500
-    if(req.userRole == "admin" || (req.userRole == "instructor" && req.userId == instructorId) ){
+    if(!courseCheck){
+        res.status(400).send({
+            error: "The request body contained an invalid courseid. Try again with a valid courseid."
+        });
+    } else if(req.userRole == "admin" || (req.userRole == "instructor" && req.userId == instructorId) ){
         if(validateAgainstSchema(req.body, AssignmentSchema)){
+            var id;
             const validAssn = extractValidFields(req.body, AssignmentSchema);
             try{
-                const id = await insertNewAssignment(validAssn);
-                res.status(201).send({
-                    id: id
-                });
+                id = await insertNewAssignment(validAssn);
             } catch (err) { next(err); } //500
+            res.status(201).send({
+                id: id
+            });             
+           
         } else {
             res.status(400).send({
                 error: "The request body was either not present or did not contain a valid Assignment object."
