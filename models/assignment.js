@@ -30,7 +30,6 @@ async function getAssignmentById(id, includeRelations) {
         .find({ _id: new ObjectId(id) })
         .project(projection)
         .toArray();
-
       return results[0];
 } exports.getAssignmentById = getAssignmentById;
 
@@ -41,7 +40,6 @@ async function getAssignmentById(id, includeRelations) {
 async function getInstructorIdByAssignment(id) {
     const db = getDBReference();
     const collection = db.collection('assignments');
-    console.log("getInstructorIDByAssignment id:"+id);
     const results = await collection.find({ _id : new ObjectId(id) }).toArray();
     const result = await getInstructorIdByCourse(results[0].courseid);
     const instructorId = result.toString();
@@ -56,7 +54,6 @@ async function getInstructorIdByAssignment(id) {
 async function testEnrollmentByAssignment(aid, uid) {
     const db = getDBReference();
     const collection = db.collection('assignments');
-    console.log("testEnrollmentByAssignment\nAID: "+ aid + "\nUID:" + uid);
     const results = await collection.find({ _id: new ObjectId(aid) }).toArray();
     if(results.length > 0) {
         const courseId = results[0].courseid.toString();
@@ -76,7 +73,6 @@ async function getSubmissionPage(query) {
     const db = getDBReference();
     const assignmentCollection = db.collection('assignments');
     const submissionCollection = db.collection('submissions.files');
-    console.log("getSubmissionPage query: "+ JSON.stringify(query,null,2));
     const targetAssignment = await assignmentCollection.find({ _id: new ObjectId(query.assignmentid)}).toArray();
     const submissionList = targetAssignment[0].submissions;
     var searchList = [];
@@ -167,23 +163,22 @@ exports.insertNewAssignment = async(assn) => {
 exports.updateAssignment = async(assn, aid) => {
     const db = getDBReference();
     const collection = db.collection('assignments');
-    console.log("updateAssignment aid:"+aid);
     const result = await collection.updateOne({_id: new ObjectId(aid)}, { $set: assn });
     return result.insertedId;
 };
 
- async function getSubmissionsByAssignment(aid) {
+async function getSubmissionsByAssignment(aid) {
     const db = getDBReference();
     const collection = db.collection('assignments');
     const results = await collection.find({ _id: new ObjectId(aid) }).toArray();
     return results[0].submissions;
 } exports.getSubmissionsByAssignment = getSubmissionsByAssignment;
 
-exports.removeSubmissionById = (sid) => {
+async function removeSubmissionById(sid) {
     const db = getDBReference();
     const bucket = new GridFSBucket(db, { bucketName: 'submissions' });
     return bucket.delete(new ObjectId(sid));
-};
+} exports.removeSubmissionById = removeSubmissionById;
 
 async function removeAssignment (aid) {
     console.log("removeAssignment aid:"+aid);
@@ -203,6 +198,10 @@ async function removeAssignment (aid) {
 exports.assignmentExists = async(aid) => {
     const db = getDBReference();
     const collection = db.collection('assignments');
-    const results = await collection.countDocuments({_id: new ObjectId(aid)});
-    return (results > 0);
+    if (!ObjectId.isValid(aid)) {
+        return false;
+    } else {
+        const results = await collection.countDocuments({_id: new ObjectId(aid)});
+        return (results > 0);
+    }
 }
