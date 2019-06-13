@@ -185,14 +185,16 @@ exports.deleteCourseByID = async function (id) {
     }
 
     const assnArray = results[0].assignments;
+    const courseid = id.toString();
+    console.log("== course ID: ", courseid);
 
     //remove this course from all student and instructor lists.
-    await userCollection.updateMany({}, {$pull: { courses: id }});
+    await userCollection.updateMany({}, {$pull: { courses: new ObjectId(id) }});
 
     //remove all assignments that are connected to this course.
-    await assignmentCollection.deleteMany({ courseid: id });
+    await assignmentCollection.deleteMany({ courseid: new ObjectId(id) });
 
-    //remove the course from the "coures" collection.
+    //remove the course from the "courses" collection.
     return await courseCollection.deleteOne({ _id: new ObjectId(id) });
 };
 
