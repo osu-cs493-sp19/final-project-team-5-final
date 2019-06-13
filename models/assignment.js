@@ -6,7 +6,8 @@ const { getDBReference } = require('../lib/mongo');
 const { 
     getInstructorIdByCourse,
     testEnrollmentByCourse,
-    insertAssignmentToCourse
+    insertAssignmentToCourse,
+    removeAssignmentFromCourse
     } = require('./course');
 
 const AssignmentSchema = {
@@ -186,10 +187,13 @@ async function removeAssignment (aid) {
     console.log("removeAssignment aid:"+aid);
     const db = getDBReference();
     const collection = db.collection('assignments');
+    const assignment = await getAssignmentById(aid)
+    const courseid = assignment.courseid.toString();
     const submissions = await getSubmissionsByAssignment(aid);
     submissions.forEach( sid => {
         removeSubmissionById(sid)
     });
+    const remidfromcourse = await removeAssignmentFromCourse(courseid, aid);
     const result = await collection.deleteOne({_id: new ObjectId(aid)});
     return result.deletedCount;
 } exports.removeAssignment = removeAssignment;
