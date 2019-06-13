@@ -334,3 +334,13 @@ exports.insertAssignmentToCourse = async(cid, aid) => {
     const results = await collection.updateOne({_id: new ObjectId(cid)}, {$addToSet : {assignments: new ObjectId(aid)}});
     return results;
 }
+
+/*
+ * Removes an assignment from a course
+ */
+exports.removeAssignmentFromCourse = async(cid, aid) => {
+  const db = getDBReference();
+  const collection = db.collection('courses');
+  const results = await collection.updateOne({_id: new ObjectId(cid)}, {$pull : {assignments: new ObjectId(aid)}});
+  return results;
+}
